@@ -43,7 +43,7 @@ for year in range(2020, 2021):
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
-                match = numpy.full((400, 20, 20), -1, dtype=int)
+                match = numpy.full((400, 400), -1, dtype=int)
                 board = numpy.zeros(shape=(20,20))
                 player = 1
                 eof = False
@@ -60,8 +60,8 @@ for year in range(2020, 2021):
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
-                            match[j][int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
-                            #board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
+                            board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
+                            match[j] = board.ravel().astype(int)
                             #data[i] = board.ravel().astype(int)
                             i = i + 1
                             j = j + 1
