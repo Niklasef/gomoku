@@ -3,7 +3,8 @@ import os
 
 out_directory = 'preped/'
 row_count = 0
-for year in range(2018, 2019):
+match_count = 0
+for year in range(2020, 2021):
     result_dir = 'data\gomocup' + str(year) + 'results_test'
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
@@ -14,6 +15,7 @@ for year in range(2018, 2019):
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
+                match_count += 1
                 with open(in_directory + filename) as file_in:
                     next(file_in)
                     lines = []
@@ -22,11 +24,14 @@ for year in range(2018, 2019):
                             row_count = row_count + 1
 
 print('row_count = ' + str(row_count))
+print('match_count = ' + str(match_count))
+data_count = row_count - (match_count * 7)
+print('data_count = ' + str(data_count))
 
-data = numpy.zeros(shape=(row_count, 400))
-labels = numpy.zeros(shape=(row_count, 1))
+data = numpy.zeros(shape=(data_count, 400*7))
+labels = numpy.zeros(shape=(data_count, 1))
 i = 0
-for year in range(2018, 2019):
+for year in range(2020, 2021):
     result_dir = 'data\gomocup' + str(year) + 'results_test'
     group = 1
     for rootdir, dirs, files in os.walk(result_dir):
@@ -66,10 +71,8 @@ for year in range(2018, 2019):
                     labels[i+1-j:i:2] = 1
             group = group +1
 
-print(data)
 print(data.shape)
 
-print(labels)
 print(labels.shape)
 
 shuffled_index = numpy.zeros(row_count).astype(int)
