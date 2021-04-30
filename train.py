@@ -21,6 +21,10 @@ model.add(layers.Dense(units=400, activation='relu'))
 model.add(layers.Dense(units=1, activation='sigmoid'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+input_shape = train_data.shape
+model.build(input_shape)
+model.summary()
+
 # Prepare the training dataset
 train_dataset = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
 train_dataset = train_dataset.batch(64)

@@ -3,13 +3,13 @@ import os
 
 out_directory = 'preped/'
 row_count = 0
-for year in range(2018, 2021):
-    root_dir = 'data\gomocup' + str(year) + 'results'
-    for rootdir, dirs, files in os.walk(root_dir):
+for year in range(2018, 2019):
+    result_dir = 'data\gomocup' + str(year) + 'results_test'
+    for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
                 continue
-            in_directory = os.path.join(root_dir, dir) + '/'
+            in_directory = os.path.join(result_dir, dir) + '/'
             print(in_directory)
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
@@ -26,14 +26,14 @@ print('row_count = ' + str(row_count))
 data = numpy.zeros(shape=(row_count, 400))
 labels = numpy.zeros(shape=(row_count, 1))
 i = 0
-for year in range(2018, 2021):
-    root_dir = 'data\gomocup' + str(year) + 'results'
+for year in range(2018, 2019):
+    result_dir = 'data\gomocup' + str(year) + 'results_test'
     group = 1
-    for rootdir, dirs, files in os.walk(root_dir):
+    for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
                 continue
-            in_directory = os.path.join(root_dir, dir) + '/'
+            in_directory = os.path.join(result_dir, dir) + '/'
             print(in_directory)
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
@@ -112,22 +112,16 @@ print('Shuffled')
 
 with open('preped/train_data.npy', "wb") as f:
     numpy.save(f, train_data)
-#    numpy.savetxt(f, train_data.astype(int), fmt='%i', delimiter=",")
 with open('preped/train_labels.npy', "wb") as f:
     numpy.save(f, train_labels)
-#    numpy.savetxt(f, train_labels.astype(int), fmt='%i', delimiter=",")
 
 
 with open('preped/test_data.npy', "wb") as f:
     numpy.save(f, test_data)
-#    numpy.savetxt(f, test_data.astype(int), fmt='%i', delimiter=",")
 with open('preped/test_labels.npy', "wb") as f:
     numpy.save(f, test_labels)
-#    numpy.savetxt(f, test_labels.astype(int), fmt='%i', delimiter=",")
 
 with open('preped/val_data.npy', "wb") as f:
     numpy.save(f, val_data)
-#    numpy.savetxt(f, val_data.astype(int), fmt='%i', delimiter=",")
 with open('preped/val_labels.npy', "wb") as f:
     numpy.save(f, val_labels)
-#    numpy.savetxt(f, val_labels.astype(int), fmt='%i', delimiter=",")    
