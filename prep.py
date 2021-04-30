@@ -3,7 +3,8 @@ import os
 
 out_directory = 'preped/'
 row_count = 0
-for year in range(2018, 2019):
+match_count = 0
+for year in range(2020, 2021):
     result_dir = 'data\gomocup' + str(year) + 'results_test'
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
@@ -20,13 +21,16 @@ for year in range(2018, 2019):
                     for line in file_in:
                         if line.count(',') == 2:
                             row_count = row_count + 1
+data_count = row_count - (match_count * 6)
 
+print('match_count = ' + str(match_count))
 print('row_count = ' + str(row_count))
+print('data_count = ' + str(data_count))
 
-data = numpy.zeros(shape=(row_count, 400))
-labels = numpy.zeros(shape=(row_count, 1))
+data = numpy.zeros(shape=(data_count, 400))
+labels = numpy.zeros(shape=(data_count, 1))
 i = 0
-for year in range(2018, 2019):
+for year in range(2020, 2021):
     result_dir = 'data\gomocup' + str(year) + 'results_test'
     group = 1
     for rootdir, dirs, files in os.walk(result_dir):
@@ -45,13 +49,19 @@ for year in range(2018, 2019):
                 j = 0
                 with open(in_directory + filename) as file_in:
                     next(file_in)
+                    next(file_in)
+                    next(file_in)
+                    next(file_in)
+                    next(file_in)
+                    next(file_in)
+                    next(file_in)
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
+                            board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
                             data[i] = board.ravel().astype(int)
                             i = i + 1
                             j = j + 1
-                            board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
                         elif eof:
                             winner = int(line.split(',')[0])
                         elif line.startswith('-1'):
@@ -66,10 +76,8 @@ for year in range(2018, 2019):
                     labels[i+1-j:i:2] = 1
             group = group +1
 
-print(data)
 print(data.shape)
 
-print(labels)
 print(labels.shape)
 
 shuffled_index = numpy.zeros(row_count).astype(int)
