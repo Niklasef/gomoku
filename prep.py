@@ -62,7 +62,7 @@ for year in range(2020, 2021):
                         if line.count(',') == 2:
                             board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
                             match[j] = board.ravel().astype(int)
-                            #data[i] = board.ravel().astype(int)
+                            #data[i] = board.ravel().astype(int)//TODO: move out of this loop and group every two moves
                             i = i + 1
                             j = j + 1
                         elif eof:
