@@ -35,5 +35,3 @@ val_dataset = val_dataset.batch(64)
 
 #### Train Model ####
 history = model.fit(train_dataset, epochs=10, validation_data=val_dataset)
-
-print('Hello world')
