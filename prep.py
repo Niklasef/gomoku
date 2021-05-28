@@ -3,19 +3,23 @@ import os
 
 out_directory = 'preped/'
 row_count = 0
-match_count = 0
-for year in range(2020, 2021):
+game_count = 0
+start_year = 2020
+stop_year = 2020
+
+#scan data
+for year in range(start_year, stop_year+1):
     result_dir = 'data\gomocup' + str(year) + 'results_test'
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
                 continue
             in_directory = os.path.join(result_dir, dir) + '/'
-            print(in_directory)
+            print("in_directory =" + str(in_directory))
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
-                match_count += 1
+                game_count += 1
                 with open(in_directory + filename) as file_in:
                     next(file_in)
                     lines = []
@@ -23,15 +27,16 @@ for year in range(2020, 2021):
                         if line.count(',') == 2:
                             row_count = row_count + 1
 
-data_count = row_count - (match_count * (6+2))
-print('match_count = ' + str(match_count))
+data_count = row_count - (game_count * (6+2))
+print('game_count = ' + str(game_count))
 print('row_count = ' + str(row_count))
 print('data_count = ' + str(data_count))
 data = numpy.zeros(shape=(data_count, 400*2))
 labels = numpy.zeros(shape=(data_count, 1))
 
+#structure data
 i = 0
-for year in range(2020, 2021):
+for year in range(start_year, stop_year+1):
     result_dir = 'data\gomocup' + str(year) + 'results_test'
     group = 1
     for rootdir, dirs, files in os.walk(result_dir):
@@ -43,7 +48,7 @@ for year in range(2020, 2021):
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
-                match = numpy.full((400, 400), -1, dtype=int)
+                game = numpy.full((400, 400), -1, dtype=int)
                 board = numpy.zeros(shape=(20,20))
                 player = 1
                 eof = False
@@ -61,7 +66,7 @@ for year in range(2020, 2021):
                     for line in file_in:
                         if line.count(',') == 2:
                             board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
-                            match[j] = board.ravel().astype(int)
+                            game[j] = board.ravel().astype(int)
                             #data[i] = board.ravel().astype(int)//TODO: move out of this loop and group every two moves
                             i = i + 1
                             j = j + 1
@@ -78,11 +83,13 @@ for year in range(2020, 2021):
                 #else:
                 #    labels[i+1-j:i:2] = 1
             group = group +1
+            print('game = ' + str(game))
 
 print(data.shape)
 
 print(labels.shape)
 
+#shuffle and store data
 #shuffled_index = numpy.zeros(row_count).astype(int)
 #for i in range(row_count):
 #    shuffled_index[i] = i
