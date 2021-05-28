@@ -5,7 +5,7 @@ out_directory = 'preped/'
 row_count = 0
 game_count = 0
 for year in range(2020, 2021):
-    result_dir = 'data\gomocup' + str(year) + 'results_test'
+    result_dir = 'data\gomocup' + str(year) + 'results'
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
@@ -15,13 +15,14 @@ for year in range(2020, 2021):
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
+#                game_count += 1#TODO: fix this, it crashes with this uncommented
                 with open(in_directory + filename) as file_in:
                     next(file_in)
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
                             row_count = row_count + 1
-data_count = row_count - (game_count * 6)
+data_count = row_count - (game_count * 6)#minus header row and init rows for each game
 
 print('game_count = ' + str(game_count))
 print('row_count = ' + str(row_count))
@@ -29,9 +30,9 @@ print('data_count = ' + str(data_count))
 
 data = numpy.zeros(shape=(data_count, 400))
 labels = numpy.zeros(shape=(data_count, 1))
-i = 0
+data_index = 0
 for year in range(2020, 2021):
-    result_dir = 'data\gomocup' + str(year) + 'results_test'
+    result_dir = 'data\gomocup' + str(year) + 'results'
     group = 1
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
@@ -46,22 +47,19 @@ for year in range(2020, 2021):
                 player = 1
                 eof = False
                 winner = 0
-                j = 0
+                data_offset = 0
                 with open(in_directory + filename) as file_in:
-                    next(file_in)
-                    next(file_in)
-                    next(file_in)
-                    next(file_in)
-                    next(file_in)
-                    next(file_in)
-                    next(file_in)
+                    next(file_in)#header
+                    row = 1
                     lines = []
                     for line in file_in:
+                        row += 1
                         if line.count(',') == 2:
                             board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = player
-                            data[i] = board.ravel().astype(int)
-                            i = i + 1
-                            j = j + 1
+                            if row > 7:#only add non init rows as actual data, first six rows are init moves
+                                data[data_index] = board.ravel().astype(int)
+                                data_index += 1
+                                data_offset += 1
                         elif eof:
                             winner = int(line.split(',')[0])
                         elif line.startswith('-1'):
@@ -71,9 +69,9 @@ for year in range(2020, 2021):
                         else:
                             player = 1
                 if winner == 1:
-                    labels[i-j:i:2] = 1
+                    labels[data_index-data_offset:data_index:2] = 1
                 else:
-                    labels[i+1-j:i:2] = 1
+                    labels[data_index+1-data_offset:data_index:2] = 1
             group = group +1
 
 print(data.shape)
@@ -107,14 +105,14 @@ for i in range(train_count):
     train_labels[i] = labels[shuffled_index[i]]
 
 for i in range(test_count):
-    j = i + train_count    
-    test_data[i] = data[shuffled_index[j]]
-    test_labels[i] = labels[shuffled_index[j]]
+    data_offset = i + train_count    
+    test_data[i] = data[shuffled_index[data_offset]]
+    test_labels[i] = labels[shuffled_index[data_offset]]
 
 for i in range(val_count):
-    j = i + train_count + val_count   
-    val_data[i] = data[shuffled_index[j]]
-    val_labels[i] = labels[shuffled_index[j]]
+    data_offset = i + train_count + val_count   
+    val_data[i] = data[shuffled_index[data_offset]]
+    val_labels[i] = labels[shuffled_index[data_offset]]
 
 print('Shuffled')
 
