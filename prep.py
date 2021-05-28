@@ -3,9 +3,9 @@ import os
 
 out_directory = 'preped/'
 row_count = 0
-match_count = 0
+game_count = 0
 for year in range(2020, 2021):
-    result_dir = 'data\gomocup' + str(year) + 'results'
+    result_dir = 'data\gomocup' + str(year) + 'results_test'
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
@@ -21,9 +21,9 @@ for year in range(2020, 2021):
                     for line in file_in:
                         if line.count(',') == 2:
                             row_count = row_count + 1
-data_count = row_count - (match_count * 6)
+data_count = row_count - (game_count * 6)
 
-print('match_count = ' + str(match_count))
+print('game_count = ' + str(game_count))
 print('row_count = ' + str(row_count))
 print('data_count = ' + str(data_count))
 
@@ -31,7 +31,7 @@ data = numpy.zeros(shape=(data_count, 400))
 labels = numpy.zeros(shape=(data_count, 1))
 i = 0
 for year in range(2020, 2021):
-    result_dir = 'data\gomocup' + str(year) + 'results'
+    result_dir = 'data\gomocup' + str(year) + 'results_test'
     group = 1
     for rootdir, dirs, files in os.walk(result_dir):
         for dir in dirs:
