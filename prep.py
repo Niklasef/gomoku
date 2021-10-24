@@ -6,8 +6,7 @@ row_count = 0
 start_year = 2020
 end_year = 2020
 dev_mode = True
-output_format = 'BIN'#'TXT' or 'BIN' 
-setup_moves_count = 6
+output_format = 'TXT'#'TXT' or 'BIN' 
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
@@ -31,8 +30,8 @@ for year in range(start_year, end_year+1):
 
 print('move count = ' + str(row_count))
 
-data = numpy.zeros(shape=(row_count-setup_moves_count, 400))
-labels = numpy.zeros(shape=(row_count-setup_moves_count, 1))
+data = numpy.zeros(shape=(row_count, 400))
+labels = numpy.zeros(shape=(row_count, 1))
 i = 0
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
@@ -55,19 +54,13 @@ for year in range(start_year, end_year+1):
                 j = 0
                 with open(in_directory + filename) as file_in:
                     next(file_in)#Skip initial meta line
-                    next(file_in)#Skip initial setup move
-                    next(file_in)#Skip initial setup move
-                    next(file_in)#Skip initial setup move
-                    next(file_in)#Skip initial setup move
-                    next(file_in)#Skip initial setup move
-                    next(file_in)#Skip initial setup move
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
+                            board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = current_player                            
                             data[i] = board.ravel().astype(int)
                             i = i + 1
                             j = j + 1
-                            board[int(line.split(',')[0])-1][int(line.split(',')[1])-1] = current_player
                         elif eof:
                             winner = int(line.split(',')[0])
                         elif line.startswith('-1'):
@@ -96,9 +89,9 @@ print(labels.shape)
 #print(shuffled_index)
 
 
-train_count = int((row_count - setup_moves_count) * 1)
-test_count = int((row_count - setup_moves_count) * 0)
-val_count = int((row_count - setup_moves_count) - train_count - test_count)
+train_count = int((row_count) * 1)
+test_count = int((row_count) * 0)
+val_count = int((row_count) - train_count - test_count)
 print('train_count = ' + str(train_count))
 print('test_count = ' + str(test_count))
 print('val_count = ' + str(val_count))
