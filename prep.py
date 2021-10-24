@@ -5,9 +5,12 @@ out_directory = 'preped/'
 row_count = 0
 start_year = 2020
 end_year = 2020
+dev_mode = True
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
+    if dev_mode :
+        root_dir += '_test'
     for rootdir, dirs, files in os.walk(root_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
@@ -31,6 +34,8 @@ labels = numpy.zeros(shape=(row_count, 1))
 i = 0
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
+    if dev_mode :
+        root_dir += '_test'    
     group = 1
     for rootdir, dirs, files in os.walk(root_dir):
         for dir in dirs:
