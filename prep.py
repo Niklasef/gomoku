@@ -6,6 +6,7 @@ row_count = 0
 start_year = 2020
 end_year = 2020
 dev_mode = True
+output_format = 'TXT'#'TXT' or 'BIN' 
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
@@ -21,13 +22,19 @@ for year in range(start_year, end_year+1):
                 if not filename.endswith(".psq"): 
                     continue
                 with open(in_directory + filename) as file_in:
-                    next(file_in)
+                    next(file_in)#Skip initial meta line
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
-                            row_count = row_count + 1
+                            row_count += 1
 
-print('row_count = ' + str(row_count))
+print('move count = ' + str(row_count))
 
 data = numpy.zeros(shape=(row_count, 400))
 labels = numpy.zeros(shape=(row_count, 1))
@@ -53,6 +60,12 @@ for year in range(start_year, end_year+1):
                 j = 0
                 with open(in_directory + filename) as file_in:
                     next(file_in)
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move
+                    next(file_in)#Skip initial setup move                    
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
@@ -119,23 +132,37 @@ for i in range(val_count):
 print('Shuffled')
 
 with open('preped/train_data.npy', "wb") as f:
-    numpy.save(f, train_data)
-#    numpy.savetxt(f, train_data.astype(int), fmt='%i', delimiter=",")
-with open('preped/train_labels.npy', "wb") as f:
-    numpy.save(f, train_labels)
-#    numpy.savetxt(f, train_labels.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'TXT':
+        numpy.savetxt(f, train_data.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'BIN':
+        numpy.save(f, train_data)
 
+with open('preped/train_labels.npy', "wb") as f:
+    if output_format == 'TXT':
+        numpy.savetxt(f, train_labels.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'BIN':
+        numpy.save(f, train_labels)
 
 with open('preped/test_data.npy', "wb") as f:
-    numpy.save(f, test_data)
-#    numpy.savetxt(f, test_data.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'TXT':
+        numpy.savetxt(f, test_data.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'BIN':
+        numpy.save(f, test_data)
+
 with open('preped/test_labels.npy', "wb") as f:
-    numpy.save(f, test_labels)
-#    numpy.savetxt(f, test_labels.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'TXT':
+        numpy.savetxt(f, test_labels.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'BIN':
+        numpy.save(f, test_labels)
 
 with open('preped/val_data.npy', "wb") as f:
-    numpy.save(f, val_data)
-#    numpy.savetxt(f, val_data.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'TXT':
+        numpy.savetxt(f, val_data.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'BIN':
+        numpy.save(f, val_data)
+
 with open('preped/val_labels.npy', "wb") as f:
-    numpy.save(f, val_labels)
-#    numpy.savetxt(f, val_labels.astype(int), fmt='%i', delimiter=",")    
+    if output_format == 'TXT':
+        numpy.savetxt(f, val_labels.astype(int), fmt='%i', delimiter=",")
+    if output_format == 'BIN':
+        numpy.save(f, val_labels)
