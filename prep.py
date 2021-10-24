@@ -6,7 +6,7 @@ row_count = 0
 start_year = 2020
 end_year = 2020
 dev_mode = True
-output_format = 'TXT'#'TXT' or 'BIN' 
+output_format = 'BIN'#'TXT' or 'BIN' 
 setup_moves_count = 6
 
 for year in range(start_year, end_year+1):
