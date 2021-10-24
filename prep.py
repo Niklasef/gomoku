@@ -3,7 +3,10 @@ import os
 
 out_directory = 'preped/'
 row_count = 0
-for year in range(2018, 2021):
+start_year = 2020
+end_year = 2020
+
+for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
     for rootdir, dirs, files in os.walk(root_dir):
         for dir in dirs:
@@ -26,7 +29,7 @@ print('row_count = ' + str(row_count))
 data = numpy.zeros(shape=(row_count, 400))
 labels = numpy.zeros(shape=(row_count, 1))
 i = 0
-for year in range(2018, 2021):
+for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
     group = 1
     for rootdir, dirs, files in os.walk(root_dir):
