@@ -101,8 +101,8 @@ numpy.random.shuffle(shuffled_index)
 print(shuffled_index)
 
 
-train_count = int(row_count * 0.6)
-test_count = int(row_count * 0.25)
+train_count = int(row_count * 1)
+test_count = int(row_count * 0)
 val_count = int(row_count - train_count - test_count)
 print('train_count = ' + str(train_count))
 print('test_count = ' + str(test_count))
