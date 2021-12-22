@@ -2,7 +2,7 @@ import numpy
 import os
 
 out_directory = 'preped/'
-row_count = 0
+data_count = 0
 start_year = 2020
 end_year = 2020
 dev_mode = True
@@ -27,12 +27,13 @@ for year in range(start_year, end_year+1):
                     lines = []
                     for line in file_in:
                         if line.count(',') == 2:
-                            row_count += 1
+                            data_count += 1
+                    data_count -= setup_moves
 
-print('move count = ' + str(row_count))
+print('move count = ' + str(data_count))
 
-data = numpy.zeros(shape=(row_count, 400))
-labels = numpy.zeros(shape=(row_count, 400))
+data = numpy.zeros(shape=(data_count, 400))
+labels = numpy.zeros(shape=(data_count, 400))
 i = 0
 col = 0
 row = 0
@@ -90,9 +91,9 @@ print(data.shape)
 print(labels)
 print(labels.shape)
 
-train_count = int((row_count) * 1)
-test_count = int((row_count) * 0)
-val_count = int((row_count) - train_count - test_count)
+train_count = int((data_count) * 0.8)
+test_count = int((data_count) * 0)
+val_count = int(data_count - train_count - test_count)
 print('train_count = ' + str(train_count))
 print('test_count = ' + str(test_count))
 print('val_count = ' + str(val_count))
@@ -114,7 +115,7 @@ for i in range(test_count):
     test_labels[i] = labels[j]
 
 for i in range(val_count):
-    j = i + train_count + val_count   
+    j = i + train_count   
     val_data[i] = data[j]
     val_labels[i] = labels[j]
 
@@ -132,24 +133,24 @@ with open('preped/train_labels.npy', "wb") as f:
 
 with open('preped/test_data.npy', "wb") as f:
     if output_format == 'TXT':
-        numpy.savetxt(f, test_data.astype(float), fmt='%i', delimiter=",")
+        numpy.savetxt(f, test_data.astype(float), delimiter=",")
     if output_format == 'BIN':
         numpy.save(f, test_data)
 
 with open('preped/test_labels.npy', "wb") as f:
     if output_format == 'TXT':
-        numpy.savetxt(f, test_labels.astype(float), fmt='%i', delimiter=",")
+        numpy.savetxt(f, test_labels.astype(int), fmt='%i', delimiter=",")
     if output_format == 'BIN':
         numpy.save(f, test_labels)
 
 with open('preped/val_data.npy', "wb") as f:
     if output_format == 'TXT':
-        numpy.savetxt(f, val_data.astype(float), fmt='%i', delimiter=",")
+        numpy.savetxt(f, val_data.astype(float), delimiter=",")
     if output_format == 'BIN':
         numpy.save(f, val_data)
 
 with open('preped/val_labels.npy', "wb") as f:
     if output_format == 'TXT':
-        numpy.savetxt(f, val_labels.astype(float), fmt='%i', delimiter=",")
+        numpy.savetxt(f, val_labels.astype(int), fmt='%i', delimiter=",")
     if output_format == 'BIN':
         numpy.save(f, val_labels)
