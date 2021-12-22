@@ -12,9 +12,9 @@ train_labels = np.genfromtxt('preped/train_labels.npy', delimiter=',')
 
 #### Setup Neural Net ####
 model = keras.Sequential()
-model.add(layers.Dense(units=400, activation='sigmoid'))
-model.add(layers.Dense(units=400, activation='sigmoid'))
-model.add(layers.Dense(units=400, activation='sigmoid'))
+model.add(layers.Dense(units=400, activation='relu'))
+model.add(layers.Dense(units=400, activation='relu'))
+model.add(layers.Dense(units=400, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 # print(model.summary())
 # Prepare the training dataset
