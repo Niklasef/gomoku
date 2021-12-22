@@ -124,7 +124,7 @@ with open('preped/train_data.npy', "wb") as f:
 
 with open('preped/train_labels.npy', "wb") as f:
     if output_format == 'TXT':
-        numpy.savetxt(f, train_labels.astype(float), fmt='%i', delimiter=",")
+        numpy.savetxt(f, train_labels.astype(int), fmt='%i', delimiter=",")
     if output_format == 'BIN':
         numpy.save(f, train_labels)
 
