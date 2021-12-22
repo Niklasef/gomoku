@@ -118,7 +118,7 @@ for i in range(val_count):
 
 with open('preped/train_data.npy', "wb") as f:
     if output_format == 'TXT':
-        numpy.savetxt(f, train_data.astype(float), fmt='%i', delimiter=",")
+        numpy.savetxt(f, train_data.astype(float), delimiter=",")
     if output_format == 'BIN':
         numpy.save(f, train_data)
 
