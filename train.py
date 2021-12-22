@@ -10,6 +10,7 @@ train_labels = np.genfromtxt('preped/train_labels.npy', delimiter=',')
 
 #print(train_labels)
 
+
 #### Setup Neural Net ####
 model = keras.Sequential()
 model.add(layers.Dense(units=400, activation='relu'))
