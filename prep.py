@@ -62,11 +62,14 @@ for year in range(start_year, end_year+1):
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
                             row = int(line.split(',')[1])
-                            if j != 0:
+                            board[row-1][col-1] = current_player
+                            j += 1
+                            if j <= setup_moves:
+                                continue
+                            if i != 0:
                                 label = numpy.zeros(shape=(20, 20))
                                 label[row-1][col-1] = 1
                                 labels[i-1] = label.ravel().astype(int)
-                            board[row-1][col-1] = current_player                            
                             data[i] = board.ravel().astype(int)
 
                             #invert board so all moves are from black perspective
@@ -75,7 +78,6 @@ for year in range(start_year, end_year+1):
                                 data[i] = numpy.where(data[i]==2, 1, data[i])
                                 data[i] = numpy.where(data[i]==3, 2, data[i])
                             i += 1
-                            j += 1
                         if current_player == 1:
                             current_player = 2
                         else:
