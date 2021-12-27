@@ -8,8 +8,6 @@ train_data = np.genfromtxt('preped/train_data.npy', delimiter=',')
 train_labels = np.genfromtxt('preped/train_labels.npy', delimiter=',')
 val_data = np.genfromtxt('preped/val_data.npy', delimiter=',')
 val_labels = np.genfromtxt('preped/val_labels.npy', delimiter=',')
-test_data = np.genfromtxt('preped/test_data.npy', delimiter=',')
-test_labels = np.genfromtxt('preped/test_labels.npy', delimiter=',')
 
 # Setup Neural Net
 model = keras.Sequential()
@@ -29,29 +27,6 @@ val_dataset = val_dataset.batch(32)
 
 #### Train Model ####
 history = model.fit(train_dataset, epochs=100, validation_data=val_dataset)
-model.save('preped/model')
-
-#### Test Model ####
-predictions_percent = model.predict(test_data)
-predictions = np.argmax(predictions_percent, axis=1)
-answers =  np.argmax(test_labels, axis=1)
-correct = 0
-illegal_move = 0
-for i in range(predictions.shape[0]):
-  if test_data[i][answers[i]] != 0:
-    illegal_move += 1
-  if predictions[i] == answers[i]:
-    correct += 1
-
-print('predictions:')
-print(predictions)
-print('answers:')
-print(answers)
-print('correct:')
-print(correct)
-print(correct/predictions.shape[0])
-print('illegal_move:')
-print(illegal_move)
-print(illegal_move/predictions.shape[0])
+model.save('model')
 
 print('Done')
