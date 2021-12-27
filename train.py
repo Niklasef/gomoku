@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
+# Load data
 train_data = np.genfromtxt('preped/train_data.npy', delimiter=',')
 train_labels = np.genfromtxt('preped/train_labels.npy', delimiter=',')
 val_data = np.genfromtxt('preped/val_data.npy', delimiter=',')
@@ -10,10 +11,7 @@ val_labels = np.genfromtxt('preped/val_labels.npy', delimiter=',')
 test_data = np.genfromtxt('preped/test_data.npy', delimiter=',')
 test_labels = np.genfromtxt('preped/test_labels.npy', delimiter=',')
 
-#print(train_labels)
-
-
-#### Setup Neural Net ####
+# Setup Neural Net
 model = keras.Sequential()
 model.add(layers.Dense(units=400, activation='relu'))
 model.add(layers.Dense(units=1000, activation='relu'))
@@ -31,7 +29,9 @@ val_dataset = val_dataset.batch(32)
 
 #### Train Model ####
 history = model.fit(train_dataset, epochs=100, validation_data=val_dataset)
+model.save('preped/model')
 
+#### Test Model ####
 predictions_percent = model.predict(test_data)
 predictions = np.argmax(predictions_percent, axis=1)
 answers =  np.argmax(test_labels, axis=1)
