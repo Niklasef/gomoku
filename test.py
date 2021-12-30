@@ -28,15 +28,9 @@ for i in range(predictions.shape[0]):
   if predictions[i] == answers[i]:
     correct += 1
 
-print('predictions:')
-print(predictions)
-print('answers:')
-print(answers)
-print('correct:')
-print(correct)
+print('Test Accuracy:')
 print(correct/predictions.shape[0])
-print('illegal_move:')
-print(illegal_move)
+print('Illegal Moves:')
 print(illegal_move/predictions.shape[0])
 
 print('Done')

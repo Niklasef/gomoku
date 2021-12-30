@@ -30,6 +30,7 @@ for year in range(start_year, end_year+1):
                         if line.count(',') == 2:
                             data_count += 1
                     data_count -= setup_moves
+                    data_count -= 1 #skip learning of winning board state
 
 print('move count = ' + str(data_count))
 
@@ -61,7 +62,7 @@ for year in range(start_year, end_year+1):
                     next(file_in)#Skip initial meta line
                     lines = []
                     for line in file_in:
-                        if i >= data_count:
+                        if i >= data_count:#This is a bug, sometimes i gets larger than the data matrix
                             break
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
@@ -70,10 +71,9 @@ for year in range(start_year, end_year+1):
                             j += 1
                             if j <= setup_moves:
                                 continue
-                            if i != 0:
-                                label = numpy.zeros(shape=(20, 20))
-                                label[row-1][col-1] = 1
-                                labels[i-1] = label.ravel().astype(int)
+                            label = numpy.zeros(shape=(20, 20))
+                            label[row-1][col-1] = 1
+                            labels[i-1] = label.ravel().astype(int)
                             data[i] = board.ravel().astype(int)
 
                             #invert board so all moves are from black perspective
@@ -86,6 +86,7 @@ for year in range(start_year, end_year+1):
                             current_player = 2
                         else:
                             current_player = 1
+                    i -= 1#skip learning of last (winning) board state
             group = group +1
 
 print(data)
