@@ -49,6 +49,7 @@ def predict():
     if m[0][p] == 0:
       prediction = p
       break
+    print('Illegal predicted move')
   return np.unravel_index(prediction, (20, 20))
 
 row = 0
