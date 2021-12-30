@@ -1,11 +1,17 @@
 import numpy as np
-import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
 
 # Load data
-test_data = np.genfromtxt('preped/test_data.npy', delimiter=',')
-test_labels = np.genfromtxt('preped/test_labels.npy', delimiter=',')
+# input_format = 'TXT'
+input_format = 'BIN'
+if input_format == 'TXT':
+  test_data = np.genfromtxt('preped/test_data.npy', delimiter=',')
+else:
+  test_data = np.load('preped/test_data.npy')
+if input_format == 'TXT':
+  test_labels = np.genfromtxt('preped/test_labels.npy', delimiter=',')
+else:
+  test_labels = np.load('preped/test_labels.npy')
 
 # Load model
 model = keras.models.load_model('model')

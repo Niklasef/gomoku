@@ -1,10 +1,6 @@
 import numpy as np
 from tensorflow import keras
 
-# Load data
-test_data = np.genfromtxt('preped/test_data.npy', delimiter=',')
-test_labels = np.genfromtxt('preped/test_labels.npy', delimiter=',')
-
 # Load model
 model = keras.models.load_model('model')
 board = np.zeros(shape=(20, 20))
@@ -13,7 +9,7 @@ def won(row, col, color):
   return connected(row, col, color, 'horizontal') >= 5 or connected(row, col, color, 'vertical') >= 5 or connected(row, col, color, 'diagonal-1') >= 5 or connected(row, col, color, 'diagonal-2') >= 5 
 
 def connected(row, col, color, direction):
-  if board[row][col] != color:
+  if row >= 20 or col >= 20 or row < 0 or col < 0 or board[row][col] != color:
     return 0
   if direction == 'horizontal':
     return 1 + connected(row, col - 1, color, 'left') + connected(row, col + 1, color, 'right')
@@ -47,20 +43,29 @@ def predict():
   m = np.zeros(shape=(1, 400))
   m[0] = board.ravel()
   predictions_percent = model.predict(m)
-  prediction = np.argmax(predictions_percent, axis=1)[0]
-  print(prediction)
-  pm  = np.zeros(shape=(400))
-  pm[prediction] = 1
-  pm = np.reshape(pm, (20, 20))
-  return pm
+  sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
+  prediction = 0
+  for p in sorted_predictions:
+    if m[0][p] == 0:
+      prediction = p
+      break
+  return np.unravel_index(prediction, (20, 20))
 
 row = 0
 col = 0
 while not won(row, col, 2):
-  p = predict()
-  board = board + p
+  (pr, pc) = predict()
+  print((pr+1, pc+1))
+  board[pr][pc] = 1
+  if won(pr, pc, 1):
+    break
   print(board)
-  move = input('Make move:')
-  row = int(move.split(',')[0]) - 1
-  col = int(move.split(',')[1]) - 1
+  while True: 
+    move = input('Make move:')
+    row = int(move.split(',')[0]) - 1
+    col = int(move.split(',')[1]) - 1
+    if board[row][col] == 0:
+      break
   board[row][col] = 2
+
+print(board)

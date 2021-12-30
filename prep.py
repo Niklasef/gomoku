@@ -5,8 +5,9 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = True
-output_format = 'TXT'#'TXT' or 'BIN' 
+dev_mode = False
+# output_format = 'TXT'
+output_format = 'BIN'
 setup_moves = 6
 
 for year in range(start_year, end_year+1):
@@ -60,6 +61,8 @@ for year in range(start_year, end_year+1):
                     next(file_in)#Skip initial meta line
                     lines = []
                     for line in file_in:
+                        if i >= data_count:
+                            break
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
                             row = int(line.split(',')[1])

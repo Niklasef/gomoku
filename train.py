@@ -4,10 +4,24 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 # Load data
-train_data = np.genfromtxt('preped/train_data.npy', delimiter=',')
-train_labels = np.genfromtxt('preped/train_labels.npy', delimiter=',')
-val_data = np.genfromtxt('preped/val_data.npy', delimiter=',')
-val_labels = np.genfromtxt('preped/val_labels.npy', delimiter=',')
+# input_format = 'TXT'
+input_format = 'BIN'
+if input_format == 'TXT':
+    train_data = np.genfromtxt('preped/train_data.npy', delimiter=',')
+else:
+    train_data = np.load('preped/train_data.npy')
+if input_format == 'TXT':
+    train_labels = np.genfromtxt('preped/train_labels.npy', delimiter=',')
+else:
+    train_labels = np.load('preped/train_labels.npy')
+if input_format == 'TXT':
+    val_data = np.genfromtxt('preped/val_data.npy', delimiter=',')
+else:
+    val_data = np.load('preped/val_data.npy')
+if input_format == 'TXT':
+    val_labels = np.genfromtxt('preped/val_labels.npy', delimiter=',')
+else:
+    val_labels = np.load('preped/val_labels.npy')
 
 # Setup Neural Net
 model = keras.Sequential()
@@ -26,7 +40,7 @@ val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
 val_dataset = val_dataset.batch(32)
 
 #### Train Model ####
-history = model.fit(train_dataset, epochs=100, validation_data=val_dataset)
+history = model.fit(train_dataset, epochs=3, validation_data=val_dataset)
 model.save('model')
 
 print('Done')
