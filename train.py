@@ -23,21 +23,33 @@ if input_format == 'TXT':
 else:
     val_labels = np.load('preped/val_labels.npy')
 
+train_data = tf.expand_dims(train_data, axis=-1)
+val_data = tf.expand_dims(val_data, axis=-1)
+
+print(train_data.shape)
+print(train_labels.shape)
+
 # Setup Neural Net
-model = keras.Sequential()
-model.add(layers.Dense(units=400, activation='relu'))
-model.add(layers.Dense(units=1000, activation='relu'))
-model.add(layers.Dense(units=400, activation='softmax'))
+model = keras.models.Sequential([
+    keras.layers.Conv2D(filters=64, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
+    keras.layers.Conv2D(filters=64, kernel_size=(4,4), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.Flatten(),
+    keras.layers.Dense(1024, activation='relu'),
+    keras.layers.Dense(1024, activation='relu'),
+    keras.layers.Dense(400, activation='softmax')
+])
+
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-# print(model.summary())
+print(model.summary())
 
 # Prepare the training dataset
 train_dataset = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
-train_dataset = train_dataset.batch(32)
+train_dataset = train_dataset.batch(16)
 
 # Prepare the validation dataset
 val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
-val_dataset = val_dataset.batch(32)
+val_dataset = val_dataset.batch(16)
 
 #### Train Model ####
 history = model.fit(train_dataset, epochs=10, validation_data=val_dataset)
