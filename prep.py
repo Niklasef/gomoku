@@ -5,7 +5,7 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = False
+dev_mode = True
 # output_format = 'TXT'
 output_format = 'BIN'
 setup_moves = 6
@@ -34,7 +34,7 @@ for year in range(start_year, end_year+1):
 
 print('move count = ' + str(data_count))
 
-data = numpy.zeros(shape=(data_count, 400))
+data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
 i = 0
 col = 0
@@ -74,7 +74,7 @@ for year in range(start_year, end_year+1):
                             label = numpy.zeros(shape=(20, 20))
                             label[row-1][col-1] = 1
                             labels[i-1] = label.ravel().astype(int)
-                            data[i] = board.ravel().astype(int)
+                            data[i] = board.astype(int)
 
                             #invert board so all moves are from black perspective
                             if current_player == 1:
@@ -102,11 +102,11 @@ print('train_count = ' + str(train_count))
 print('test_count = ' + str(test_count))
 print('val_count = ' + str(val_count))
 
-train_data = numpy.zeros(shape=(train_count, 400))
+train_data = numpy.zeros(shape=(train_count, 20, 20))
 train_labels = numpy.zeros(shape=(train_count, 400))
-test_data = numpy.zeros(shape=(test_count, 400))
+test_data = numpy.zeros(shape=(test_count, 20, 20))
 test_labels = numpy.zeros(shape=(test_count, 400))
-val_data = numpy.zeros(shape=(val_count, 400))
+val_data = numpy.zeros(shape=(val_count, 20, 20))
 val_labels = numpy.zeros(shape=(val_count, 400))
 
 for i in range(train_count):
