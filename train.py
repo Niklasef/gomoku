@@ -45,14 +45,14 @@ print(model.summary())
 
 # Prepare the training dataset
 train_dataset = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
-train_dataset = train_dataset.batch(16)
+train_dataset = train_dataset.batch(32)
 
 # Prepare the validation dataset
 val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
-val_dataset = val_dataset.batch(16)
+val_dataset = val_dataset.batch(32)
 
 #### Train Model ####
-history = model.fit(train_dataset, epochs=10, validation_data=val_dataset)
+history = model.fit(train_dataset, epochs=20, validation_data=val_dataset)
 model.save('model')
 
 print('Done')
