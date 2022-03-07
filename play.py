@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow import keras
 
 # Load model
@@ -40,17 +41,19 @@ def connected(row, col, color, direction):
     return 1 + connected(row - 1, col, color, direction)
 
 def predict():
-  m = np.zeros(shape=(1, 400))
-  m[0] = board.ravel()
+  m = np.zeros(shape=(1, 20, 20, 1))
+  m[0] = tf.expand_dims(board, axis=-1)
   predictions_percent = model.predict(m)
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
-  prediction = 0
+  prediction = (0, 0)
   for p in sorted_predictions:
-    if m[0][p] == 0:
-      prediction = p
+    p_ravel = np.unravel_index(p, (20, 20))
+    if board[p_ravel[0]][p_ravel[1]] == 0:
+      prediction = p_ravel
       break
     print('Illegal predicted move')
-  return np.unravel_index(prediction, (20, 20))
+  # print(prediction.shape)
+  return prediction
 
 row = 0
 col = 0
