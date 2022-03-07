@@ -14,20 +14,18 @@ if input_format == 'TXT':
 else:
   test_labels = np.load('preped/test_labels.npy')
 
-test_data = tf.expand_dims(test_data, axis=-1)
-
 # Load model
 model = keras.models.load_model('model')
 
 #### Test Model ####
-predictions_percent = model.predict(test_data)
+predictions_percent = model.predict(tf.expand_dims(test_data, axis=-1))
 predictions = np.argmax(predictions_percent, axis=1)
 answers =  np.argmax(test_labels, axis=1)
 correct = 0
 illegal_move = 0
 for i in range(predictions.shape[0]):
-  # if test_data[i][answers[i]] != 0:
-  #   illegal_move += 1
+  if test_data[i].ravel().astype(int)[answers[i]] != 0:
+    illegal_move += 1
   if predictions[i] == answers[i]:
     correct += 1
 
