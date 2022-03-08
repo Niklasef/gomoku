@@ -83,7 +83,7 @@ for year in range(start_year, end_year+1):
                                 data[i] = numpy.where(data[i]==3, 2, data[i])
                             i += 1
                         if current_player == 1:
-                            current_player = 2
+                            current_player = -1
                         else:
                             current_player = 1
                     i -= 1#skip learning of last (winning) board state

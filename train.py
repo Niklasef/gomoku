@@ -52,7 +52,7 @@ val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
 val_dataset = val_dataset.batch(32)
 
 #### Train Model ####
-history = model.fit(train_dataset, epochs=20, validation_data=val_dataset)
+history = model.fit(train_dataset, epochs=30, validation_data=val_dataset)
 model.save('model')
 
 print('Done')
