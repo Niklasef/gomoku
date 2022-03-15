@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
+np.set_printoptions( linewidth=140)  # float arrays %.3g    
+
 # Load model
 model = keras.models.load_model('model')
 board = np.zeros(shape=(20, 20))
@@ -43,7 +45,7 @@ def connected(row, col, color, direction):
 def predict():
   m = np.zeros(shape=(1, 20, 20, 1))
   m[0] = tf.expand_dims(board, axis=-1)
-  predictions_percent = model.predict(m)
+  predictions_percent = model.predict(m.astype(float))
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
   prediction = (0, 0)
   for p in sorted_predictions:
@@ -70,6 +72,6 @@ while not won(row, col, -1):
     col = int(move.split(',')[1]) - 1
     if board[row][col] == 0:
       break
-  board[row][col] = 2
+  board[row][col] = -1
 
 print(board)
