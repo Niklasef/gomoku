@@ -57,7 +57,7 @@ def predict():
 
 row = 0
 col = 0
-while not won(row, col, 2):
+while not won(row, col, -1):
   (pr, pc) = predict()
   print((pr+1, pc+1))
   board[pr][pc] = 1
