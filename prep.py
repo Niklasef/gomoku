@@ -5,7 +5,8 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = False
+dev_mode = True
+print_final_board_state = False
 # output_format = 'TXT'
 output_format = 'BIN'
 setup_moves = 6
@@ -54,7 +55,7 @@ for year in range(start_year, end_year+1):
                 if not filename.endswith(".psq"): 
                     continue
                 board = numpy.zeros(shape=(20,20))
-                current_player = 1
+                current_player = 0
                 
                 #Iterate moves in game
                 j = 0
@@ -64,6 +65,10 @@ for year in range(start_year, end_year+1):
                     for line in file_in:
                         if i >= data_count:#This is a bug, sometimes i gets larger than the data matrix
                             break
+                        if current_player == 1:
+                            current_player = -1
+                        else:
+                            current_player = 1
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
                             row = int(line.split(',')[1])
@@ -82,11 +87,9 @@ for year in range(start_year, end_year+1):
                                 data[i] = numpy.where(data[i]==2, 1, data[i])
                                 data[i] = numpy.where(data[i]==3, 2, data[i])
                             i += 1
-                        if current_player == 1:
-                            current_player = -1
-                        else:
-                            current_player = 1
                     i -= 1#skip learning of last (winning) board state
+                if print_final_board_state:
+                    os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
             group = group +1
 
 print(data)
