@@ -1,8 +1,7 @@
+import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-
-np.set_printoptions( linewidth=140)  # float arrays %.3g    
 
 # Load model
 model = keras.models.load_model('model')
@@ -54,7 +53,6 @@ def predict():
       prediction = p_ravel
       break
     print('Illegal predicted move')
-  # print(prediction.shape)
   return prediction
 
 row = 0
@@ -65,7 +63,7 @@ while not won(row, col, -1):
   board[pr][pc] = 1
   if won(pr, pc, 1):
     break
-  print(board)
+  os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
   while True: 
     move = input('Make move:')
     row = int(move.split(',')[0]) - 1
@@ -74,4 +72,4 @@ while not won(row, col, -1):
       break
   board[row][col] = -1
 
-print(board)
+os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
