@@ -82,10 +82,10 @@ for year in range(start_year, end_year+1):
                             data[i] = board.astype(int)
 
                             #invert board so all moves are from black perspective
-                            if current_player == 1:
+                            if current_player == -1:
                                 data[i] = numpy.where(data[i]==1, 3, data[i])
-                                data[i] = numpy.where(data[i]==2, 1, data[i])
-                                data[i] = numpy.where(data[i]==3, 2, data[i])
+                                data[i] = numpy.where(data[i]==-1, 1, data[i])
+                                data[i] = numpy.where(data[i]==3, 1, data[i])
                             i += 1
                     i -= 1#skip learning of last (winning) board state
                 if print_final_board_state:
