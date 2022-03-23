@@ -1,10 +1,18 @@
+from asyncio.windows_events import NULL
 import os
+import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
 # Load model
-model = keras.models.load_model('model')
+model_black_name = sys.argv[1]
+model_black = keras.models.load_model('models/' + model_black_name)
+model_white_name = ''
+model_white = NULL
+if len(sys.argv) == 3:
+  model_white_name = sys.argv[2]
+  model_white = keras.models.load_model('models/' + model_white_name)
 board = np.zeros(shape=(20, 20))
 
 def won(row, col, color):
@@ -41,10 +49,19 @@ def connected(row, col, color, direction):
   if direction == 'up':
     return 1 + connected(row - 1, col, color, direction)
 
-def predict():
+def predict(color):
   m = np.zeros(shape=(1, 20, 20, 1))
   m[0] = tf.expand_dims(board, axis=-1)
-  predictions_percent = model.predict(m.astype(float))
+  if color == 'BLACK':
+    predictions_percent = model_black.predict(m.astype(float))
+  if color == 'WHITE':
+    w_board = board
+    w_board = np.where(w_board==1, 3, w_board)
+    w_board = np.where(w_board==-1, 1, w_board)
+    w_board = np.where(w_board==3, 1, w_board)    
+    w_m = np.zeros(shape=(1, 20, 20, 1))
+    w_m[0] = tf.expand_dims(w_board, axis=-1)
+    predictions_percent = model_white.predict(w_m.astype(float))    
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
   prediction = (0, 0)
   for p in sorted_predictions:
@@ -58,18 +75,22 @@ def predict():
 row = 0
 col = 0
 while not won(row, col, -1):
-  (pr, pc) = predict()
+  (pr, pc) = predict('BLACK')
   print((pr+1, pc+1))
   board[pr][pc] = 1
   if won(pr, pc, 1):
     break
   os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
-  while True: 
-    move = input('Make move:')
-    row = int(move.split(',')[0]) - 1
-    col = int(move.split(',')[1]) - 1
-    if board[row][col] == 0:
-      break
+  if model_white == NULL:
+    while True: 
+      move = input('Make move:')
+      row = int(move.split(',')[0]) - 1
+      col = int(move.split(',')[1]) - 1
+      if board[row][col] == 0:
+        break
+  else:
+    (row, col) = predict('WHITE')
+
   board[row][col] = -1
 
 os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
