@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+import subprocess
 
 # Load data
 # input_format = 'TXT'
@@ -51,6 +52,9 @@ val_dataset = val_dataset.batch(16)
 
 #### Train Model ####
 history = model.fit(train_dataset, epochs=10, validation_data=val_dataset)
-model.save('model')
+
+label = subprocess.check_output(["git", "describe"]).decode("utf-8").strip()
+print(label)
+model.save('models/' + label)
 
 print('Done')
