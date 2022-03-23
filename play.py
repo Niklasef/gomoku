@@ -1,22 +1,29 @@
 from asyncio.windows_events import NULL
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-
-# Load model
+# Load models
 model_black_name = sys.argv[1]
 model_black = keras.models.load_model('models/' + model_black_name)
 model_white_name = ''
 model_white = NULL
-if len(sys.argv) == 3:
+silent = False
+if len(sys.argv) >= 3:
   model_white_name = sys.argv[2]
   model_white = keras.models.load_model('models/' + model_white_name)
+  if len(sys.argv) == 4:
+    silent = sys.argv[3] == 'silent'
 board = np.zeros(shape=(20, 20))
 
 def won(row, col, color):
-  return connected(row, col, color, 'horizontal') >= 5 or connected(row, col, color, 'vertical') >= 5 or connected(row, col, color, 'diagonal-1') >= 5 or connected(row, col, color, 'diagonal-2') >= 5 
+  w = connected(row, col, color, 'horizontal') >= 5 or connected(row, col, color, 'vertical') >= 5 or connected(row, col, color, 'diagonal-1') >= 5 or connected(row, col, color, 'diagonal-2') >= 5
+  if w:
+    print(color)
+  return w
 
 def connected(row, col, color, direction):
   if row >= 20 or col >= 20 or row < 0 or col < 0 or board[row][col] != color:
@@ -69,18 +76,17 @@ def predict(color):
     if board[p_ravel[0]][p_ravel[1]] == 0:
       prediction = p_ravel
       break
-    print('Illegal predicted move')
   return prediction
 
 row = 0
 col = 0
 while not won(row, col, -1):
-  (pr, pc) = predict('BLACK')
-  print((pr+1, pc+1))
+  (pr, pc) = predict("BLACK")
   board[pr][pc] = 1
   if won(pr, pc, 1):
     break
-  os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+  if not silent :
+    os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
   if model_white == NULL:
     while True: 
       move = input('Make move:')
@@ -90,7 +96,7 @@ while not won(row, col, -1):
         break
   else:
     (row, col) = predict('WHITE')
-
   board[row][col] = -1
 
-os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+if not silent :
+  os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
