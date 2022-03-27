@@ -9,7 +9,7 @@ dev_mode = True
 print_final_board_state = False
 # output_format = 'TXT'
 output_format = 'BIN'
-setup_moves = 6
+setup_moves = []
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
@@ -27,17 +27,21 @@ for year in range(start_year, end_year+1):
                 with open(in_directory + filename) as file_in:
                     next(file_in)#Skip initial meta line
                     lines = []
+                    setup_moves.append(0)
                     for line in file_in:
                         if line.count(',') == 2:
                             data_count += 1
-                    data_count -= setup_moves
+                            if int(line.split(',')[2]) == 0:
+                                setup_moves[-1] += 1
+                    data_count -= setup_moves[-1]
                     data_count -= 1 #skip learning of winning board state
 
 print('move count = ' + str(data_count))
-
+print('setup_moves length = ' + str(len(setup_moves)))
 data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
 i = 0
+game_i = 0
 col = 0
 row = 0
 for year in range(start_year, end_year+1):
@@ -74,7 +78,7 @@ for year in range(start_year, end_year+1):
                             row = int(line.split(',')[1])
                             board[row-1][col-1] = current_player
                             j += 1
-                            if j <= setup_moves:
+                            if j <= setup_moves[game_i]:
                                 continue
                             label = numpy.zeros(shape=(20, 20))
                             label[row-1][col-1] = 1
@@ -88,6 +92,7 @@ for year in range(start_year, end_year+1):
                                 data[i] = numpy.where(data[i]==3, 1, data[i])
                             i += 1
                     i -= 1#skip learning of last (winning) board state
+                game_i += 1
                 if print_final_board_state:
                     os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
             group = group +1
