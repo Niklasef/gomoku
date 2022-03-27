@@ -38,6 +38,7 @@ for year in range(start_year, end_year+1):
 
 print('move count = ' + str(data_count))
 print('setup_moves length = ' + str(len(setup_moves)))
+print(setup_moves)
 data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
 i = 0
