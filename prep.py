@@ -10,6 +10,7 @@ print_final_board_state = False
 # output_format = 'TXT'
 output_format = 'BIN'
 setup_moves = []
+setup_mode = True
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
@@ -24,6 +25,7 @@ for year in range(start_year, end_year+1):
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
+                setup_mode = True
                 with open(in_directory + filename) as file_in:
                     next(file_in)#Skip initial meta line
                     lines = []
@@ -31,8 +33,10 @@ for year in range(start_year, end_year+1):
                     for line in file_in:
                         if line.count(',') == 2:
                             data_count += 1
-                            if int(line.split(',')[2]) == 0:
+                            if int(line.split(',')[2]) == 0 and setup_mode:
                                 setup_moves[-1] += 1
+                            else:
+                                setup_mode = False
                     data_count -= setup_moves[-1]
                     data_count -= 1 #skip learning of winning board state
 
