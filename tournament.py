@@ -2,8 +2,31 @@ import subprocess
 import os
 
 
-models = [f.path for f in os.scandir("models") if f.is_dir()]
+models = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
+opponents = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
+results = {}
+for model in models:
+    results[model] = 0
 print(models)
 
-winner = subprocess.check_output(["py.exe", "play.py", "cnn-64_5-64_2-64_2-400", "cnn-64_5-64_2-64_2-400-2-g4cb5cfe", "silent"]).decode("utf-8").strip()
-print(winner)
+for model in models:
+    opponents = list(filter(lambda x: x != model, opponents))
+    for opponent in opponents:
+        print(f'"{model}" vs "{opponent}"')
+        winner = int(subprocess.check_output(["py.exe", "play.py", model, opponent, "silent"]).decode("utf-8").strip())
+        if winner == 1:
+            results[model] += 1
+            print(f'"{model}" won')
+        elif winner == -1:
+            results[opponent] += 1
+            print(f'"{opponent}" won')
+        print(f'"{opponent}" vs "{model}"')
+        winner = int(subprocess.check_output(["py.exe", "play.py", opponent, model, "silent"]).decode("utf-8").strip())
+        if winner == 1:
+            results[opponent] += 1
+            print(f'"{opponent}" won')
+        elif winner == -1:
+            results[model] += 1
+            print(f'"{model}" won')
+
+print(sorted(results.items(), key=lambda x:x[1], reverse=True))
