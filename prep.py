@@ -32,12 +32,11 @@ for year in range(start_year, end_year+1):
                     setup_moves.append(0)
                     for line in file_in:
                         if line.count(',') == 2:
-                            data_count += 1
                             if int(line.split(',')[2]) == 0 and setup_mode:
                                 setup_moves[-1] += 1
                             else:
                                 setup_mode = False
-                    data_count -= setup_moves[-1]
+                                data_count += 1
                     data_count -= 1 #skip learning of winning board state
 
 print('move count = ' + str(data_count))
