@@ -5,7 +5,7 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = False
+dev_mode = True
 print_final_board_state = False
 # output_format = 'TXT'
 output_format = 'BIN'
@@ -37,11 +37,10 @@ for year in range(start_year, end_year+1):
                             else:
                                 setup_mode = False
                                 data_count += 1
-                    data_count -= 1 #skip learning of winning board state
 
 print('move count = ' + str(data_count))
 print('setup_moves length = ' + str(len(setup_moves)))
-print(setup_moves)
+print('setup_moves' + str(setup_moves))
 data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
 i = 0
@@ -63,7 +62,7 @@ for year in range(start_year, end_year+1):
                 if not filename.endswith(".psq"): 
                     continue
                 board = numpy.zeros(shape=(20,20))
-                current_player = 0
+                current_player = 1
                 
                 #Iterate moves in game
                 j = 0
@@ -71,41 +70,28 @@ for year in range(start_year, end_year+1):
                     next(file_in)#Skip initial meta line
                     lines = []
                     for line in file_in:
-                        if i >= data_count:#This is a bug, sometimes i gets larger than the data matrix
-                            break
-                        if current_player == 1:
-                            current_player = -1
-                        else:
-                            current_player = 1
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
                             row = int(line.split(',')[1])
+                            if j >= setup_moves[game_i]:#only learn non setup moves
+                                label = numpy.zeros(shape=(20, 20))
+                                label[row-1][col-1] = 1
+                                labels[i] = label.ravel().astype(int)
+                                data[i] = board.astype(int)
+                                #invert board so all moves are from black perspective
+                                if current_player == -1:
+                                    data[i] = numpy.where(data[i]==1, 3, data[i])
+                                    data[i] = numpy.where(data[i]==-1, 1, data[i])
+                                    data[i] = numpy.where(data[i]==3, 1, data[i])
+                                i += 1
+
                             board[row-1][col-1] = current_player
                             j += 1
-                            if j <= setup_moves[game_i]:
-                                continue
-                            label = numpy.zeros(shape=(20, 20))
-                            label[row-1][col-1] = 1
-                            labels[i-1] = label.ravel().astype(int)
-                            data[i] = board.astype(int)
-
-                            #invert board so all moves are from black perspective
-                            if current_player == -1:
-                                data[i] = numpy.where(data[i]==1, 3, data[i])
-                                data[i] = numpy.where(data[i]==-1, 1, data[i])
-                                data[i] = numpy.where(data[i]==3, 1, data[i])
-                            i += 1
-                    i -= 1#skip learning of last (winning) board state
+                            current_player *= -1
+                            if print_final_board_state:
+                                os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
                 game_i += 1
-                if print_final_board_state:
-                    os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
             group = group +1
-
-print(data)
-print(data.shape)
-
-print(labels)
-print(labels.shape)
 
 train_count = int((data_count) * 0.7)
 test_count = int((data_count) * 0.15)
