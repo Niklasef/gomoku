@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -15,7 +16,7 @@ else:
   test_labels = np.load('preped/test_labels.npy')
 
 # Load model
-model = keras.models.load_model('model')
+model = keras.models.load_model('models/' + sys.argv[1])
 
 #### Test Model ####
 predictions_percent = model.predict(tf.expand_dims(test_data, axis=-1))
