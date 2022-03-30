@@ -6,18 +6,25 @@ import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+
+board = np.zeros(shape=(20, 20))
+setup_moves = sys.argv[1].split('_')
+setup_color = 1
+for setup_move in setup_moves:
+  board[int(setup_move.split('-')[0])-1, int(setup_move.split('-')[1])-1] = setup_color
+  setup_color *= -1
+
 # Load models
-model_black_name = sys.argv[1]
+model_black_name = sys.argv[2]
 model_black = keras.models.load_model('models/' + model_black_name)
 model_white_name = ''
 model_white = NULL
 silent = False
-if len(sys.argv) >= 3:
-  model_white_name = sys.argv[2]
+if len(sys.argv) >= 4:
+  model_white_name = sys.argv[3]
   model_white = keras.models.load_model('models/' + model_white_name)
-  if len(sys.argv) == 4:
-    silent = sys.argv[3] == 'silent'
-board = np.zeros(shape=(20, 20))
+  if len(sys.argv) == 5:
+    silent = sys.argv[4] == 'silent'
 
 def won(row, col, color):
   w = connected(row, col, color, 'horizontal') >= 5 or connected(row, col, color, 'vertical') >= 5 or connected(row, col, color, 'diagonal-1') >= 5 or connected(row, col, color, 'diagonal-2') >= 5
