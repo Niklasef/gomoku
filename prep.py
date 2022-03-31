@@ -6,11 +6,11 @@ data_count = 0
 start_year = 2020
 end_year = 2020
 dev_mode = False
-print_final_board_state = False
+print_board_states = False
 # output_format = 'TXT'
 output_format = 'BIN'
-setup_moves = []
-setup_mode = True
+opening_moves = []
+openings = numpy.load('openings.npy')
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
@@ -25,22 +25,29 @@ for year in range(start_year, end_year+1):
             for filename in os.listdir(in_directory):
                 if not filename.endswith(".psq"): 
                     continue
-                setup_mode = True
                 with open(in_directory + filename) as file_in:
                     next(file_in)#Skip initial meta line
                     lines = []
-                    setup_moves.append(0)
+                    opening_moves.append(0)
+                    board = numpy.zeros(shape=(20,20))
+                    found_opening = False
+                    player = 1
                     for line in file_in:
                         if line.count(',') == 2:
-                            if int(line.split(',')[2]) == 0 and setup_mode:
-                                setup_moves[-1] += 1
-                            else:
-                                setup_mode = False
+                            board[int(line.split(',')[1])-1][int(line.split(',')[0])-1] = player
+                            player *= -1
+                            if found_opening:
                                 data_count += 1
+                            else:
+                                opening_moves[-1] += 1
+                            for opening in openings:
+                                if numpy.array_equal(board, opening):
+                                    found_opening = True
+                                    break                            
 
 print('move count = ' + str(data_count))
-print('setup_moves length = ' + str(len(setup_moves)))
-print('setup_moves' + str(setup_moves))
+print('opening_moves length = ' + str(len(opening_moves)))
+print('opening_moves' + str(opening_moves))
 data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
 i = 0
@@ -73,7 +80,8 @@ for year in range(start_year, end_year+1):
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
                             row = int(line.split(',')[1])
-                            if j >= setup_moves[game_i]:#only learn non setup moves
+
+                            if j >= opening_moves[game_i]:#only learn non opening moves
                                 label = numpy.zeros(shape=(20, 20))
                                 label[row-1][col-1] = 1
                                 labels[i] = label.ravel().astype(int)
@@ -88,11 +96,13 @@ for year in range(start_year, end_year+1):
                             board[row-1][col-1] = current_player
                             j += 1
                             current_player *= -1
-                            if print_final_board_state:
+                            if print_board_states:
                                 os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
                 game_i += 1
             group = group +1
 
+if numpy.array_equal(board, openings[10]):
+    print("Found opening " + str(filename))
 train_count = int((data_count) * 0.7)
 test_count = int((data_count) * 0.15)
 val_count = int(data_count - train_count - test_count)
