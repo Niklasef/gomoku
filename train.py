@@ -51,7 +51,7 @@ val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
 val_dataset = val_dataset.batch(16)
 
 #### Train Model ####
-history = model.fit(train_dataset, epochs=2, validation_data=val_dataset)
+history = model.fit(train_dataset, epochs=10, validation_data=val_dataset)
 
 label = subprocess.check_output(["git", "describe"]).decode("utf-8").strip()
 print(label)
