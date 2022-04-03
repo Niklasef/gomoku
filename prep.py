@@ -1,3 +1,4 @@
+import subprocess
 import numpy
 import os
 
@@ -5,12 +6,20 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = False
+dev_mode = True
 print_board_states = False
 # output_format = 'TXT'
 output_format = 'BIN'
 opening_moves = []
-openings = numpy.load('openings.npy')
+openings = numpy.zeros(shape=(12, 20, 20))
+i = 0
+
+with open('openings_freestyle.txt') as f:
+    for line in f:
+        opening_ser = subprocess.check_output(["py.exe", "opening.py", line, "silent"]).decode("utf-8")
+        opening_raveled = numpy.fromstring(opening_ser.replace('[','').replace(']',''), dtype=int, sep='_')
+        openings[i] = opening_raveled.reshape(20,20)
+        i += 1
 
 for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
