@@ -1,5 +1,6 @@
 from asyncio.windows_events import NULL
 import os
+import subprocess
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import sys
@@ -8,23 +9,24 @@ import tensorflow as tf
 from tensorflow import keras
 
 board = np.zeros(shape=(20, 20))
-setup_moves = sys.argv[1].split('_')
-setup_color = 1
-for setup_move in setup_moves:
-  board[int(setup_move.split('-')[0])-1, int(setup_move.split('-')[1])-1] = setup_color
-  setup_color *= -1
 
 # Load models
-model_black_name = sys.argv[2]
+model_black_name = sys.argv[1]
 model_black = keras.models.load_model('models/' + model_black_name)
 model_white_name = ''
 model_white = NULL
 silent = False
-if len(sys.argv) >= 4:
-  model_white_name = sys.argv[3]
-  model_white = keras.models.load_model('models/' + model_white_name)
-  if len(sys.argv) == 5:
-    silent = sys.argv[4] == 'silent'
+if len(sys.argv) >= 3:
+  if sys.argv[2] != "human":
+    model_white_name = sys.argv[2]
+    model_white = keras.models.load_model('models/' + model_white_name)
+  if len(sys.argv) >= 4:
+    opening_ser = subprocess.check_output(["py.exe", "opening.py", sys.argv[3], "silent"]).decode("utf-8")
+    opening_raveled = np.fromstring(opening_ser.replace('[','').replace(']',''), dtype=int, sep='_')
+    board = opening_raveled.reshape(20,20)
+    if len(sys.argv) == 5:
+      silent = sys.argv[4] == 'silent'
+human_player_exists = model_white == NULL
 
 def won(row, col, color):
   w = connected(row, col, color, 'horizontal') >= 5 or connected(row, col, color, 'vertical') >= 5 or connected(row, col, color, 'diagonal-1') >= 5 or connected(row, col, color, 'diagonal-2') >= 5
@@ -87,23 +89,21 @@ def predict(color):
 
 row = 0
 col = 0
-while not won(row, col, -1):
-  (pr, pc) = predict("BLACK")
-  board[pr][pc] = 1
-  if won(pr, pc, 1):
-    break
-  if not silent :
-    os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
-  if model_white == NULL:
+player = "BLACK"
+
+while True:
+  if human_player_exists and player == "WHITE":
     while True: 
       move = input('Make move:')
       row = int(move.split(',')[0]) - 1
       col = int(move.split(',')[1]) - 1
       if board[row][col] == 0:
-        break
+        break    
   else:
-    (row, col) = predict('WHITE')
-  board[row][col] = -1
-
-if not silent :
-  os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+    (row, col) = predict(player)
+  board[row][col] = 1 if player == "BLACK" else -1
+  if not silent:
+    os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+  if won(row, col, 1 if player == "BLACK" else -1):
+    break
+  player = "WHITE" if player == "BLACK" else "BLACK"

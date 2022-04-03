@@ -1,7 +1,6 @@
 data/
 preped/
 models/
-openings.npy
 openings_freestyle.txt
 
 # Byte-compiled / optimized / DLL files
