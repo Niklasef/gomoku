@@ -16,8 +16,11 @@ model_black = keras.models.load_model('models/' + model_black_name)
 model_white_name = ''
 model_white = NULL
 silent = False
+human_player_exists = False
 if len(sys.argv) >= 3:
-  if sys.argv[2] != "human":
+  if sys.argv[2] == "human":
+    human_player_exists = True
+  else:
     model_white_name = sys.argv[2]
     model_white = keras.models.load_model('models/' + model_white_name)
   if len(sys.argv) >= 4:
@@ -26,7 +29,14 @@ if len(sys.argv) >= 3:
     board = opening_raveled.reshape(20,20)
     if len(sys.argv) == 5:
       silent = sys.argv[4] == 'silent'
-human_player_exists = model_white == NULL
+
+opening_moves = (board != 0).sum()
+starting_color = "BLACK"
+if opening_moves % 2 != 0:
+  starting_color = "WHITE"
+  temp = model_black
+  model_black = model_white
+  model_white = temp
 
 def won(row, col, color):
   w = connected(row, col, color, 'horizontal') >= 5 or connected(row, col, color, 'vertical') >= 5 or connected(row, col, color, 'diagonal-1') >= 5 or connected(row, col, color, 'diagonal-2') >= 5
@@ -89,10 +99,10 @@ def predict(color):
 
 row = 0
 col = 0
-player = "BLACK"
+player = starting_color
 
 while True:
-  if human_player_exists and player == "WHITE":
+  if human_player_exists and player != starting_color:
     while True: 
       move = input('Make move:')
       row = int(move.split(',')[0]) - 1
