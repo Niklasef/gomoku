@@ -112,6 +112,12 @@ for year in range(start_year, end_year+1):
                 game_i += 1
             group = group +1
 
+shuffled_index = numpy.zeros(data_count).astype(int)
+for i in range(data_count):
+   shuffled_index[i] = i
+
+numpy.random.shuffle(shuffled_index)
+
 if numpy.array_equal(board, openings[10]):
     print("Found opening " + str(filename))
 train_count = int((data_count) * 0.7)
@@ -129,18 +135,18 @@ val_data = numpy.zeros(shape=(val_count, 20, 20))
 val_labels = numpy.zeros(shape=(val_count, 400))
 
 for i in range(train_count):
-    train_data[i] = data[i]
-    train_labels[i] = labels[i]
+    train_data[i] = data[shuffled_index[i]]
+    train_labels[i] = labels[shuffled_index[i]]
 
 for i in range(test_count):
     j = i + train_count    
-    test_data[i] = data[j]
-    test_labels[i] = labels[j]
+    test_data[i] = data[shuffled_index[j]]
+    test_labels[i] = labels[shuffled_index[j]]
 
 for i in range(val_count):
     j = i + train_count   
-    val_data[i] = data[j]
-    val_labels[i] = labels[j]
+    val_data[i] = data[shuffled_index[j]]
+    val_labels[i] = labels[shuffled_index[j]]
 
 with open('preped/train_data.npy', "wb") as f:
     if output_format == 'TXT':
