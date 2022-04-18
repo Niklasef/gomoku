@@ -17,6 +17,7 @@ model_white_name = ''
 model_white = NULL
 silent = False
 human_player_exists = False
+non_historic_index_models = []
 if len(sys.argv) >= 3:
   if sys.argv[2] == "human":
     human_player_exists = True
@@ -27,8 +28,10 @@ if len(sys.argv) >= 3:
     opening_ser = subprocess.check_output(["py.exe", "opening.py", sys.argv[3], "silent"]).decode("utf-8")
     opening_raveled = np.fromstring(opening_ser.replace('[','').replace(']',''), dtype=int, sep='_')
     board = opening_raveled.reshape(20,20)
-    if len(sys.argv) == 5:
+    if len(sys.argv) >= 5:
       silent = sys.argv[4] == 'silent'
+      if len(sys.argv) >= 6:
+        non_historic_index_models = sys.argv[5].split(',')
 
 opening_moves = (board != 0).sum()
 starting_color = "BLACK"
@@ -79,12 +82,19 @@ def connected(row, col, color, direction):
     return 1 + connected(row - 1, col, color, direction)
 
 def predict(color):
-  m = np.zeros(shape=(1, 20, 20, 1))
-  m[0] = tf.expand_dims(board, axis=-1)
+  board_copy = np.copy(board)
   if color == 'BLACK':
+    if model_black_name in non_historic_index_models:
+      board_copy = np.where(board_copy > 0, 1, board_copy)
+      board_copy = np.where(board_copy < 0, -1, board_copy)
+    m = np.zeros(shape=(1, 20, 20, 1))
+    m[0] = tf.expand_dims(board_copy, axis=-1)
     predictions_percent = model_black.predict(m.astype(float))
   if color == 'WHITE':
-    w_board = board
+    if model_white_name == "cnn-64_5-64_2-64_2-400_3K":
+      board_copy = np.where(board_copy > 0, 1, board_copy)
+      board_copy = np.where(board_copy < 0, -1, board_copy)    
+    w_board = board_copy
     w_board = np.where(w_board==1, 3, w_board)
     w_board = np.where(w_board==-1, 1, w_board)
     w_board = np.where(w_board==3, 1, w_board)    
