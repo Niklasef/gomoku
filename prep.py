@@ -44,6 +44,8 @@ for year in range(start_year, end_year+1):
                         if line.count(',') == 2:
                             board[int(line.split(',')[1])-1][int(line.split(',')[0])-1] = player
                             player *= -1
+                            if player > 0:
+                                player += 1
                             if found_opening:
                                 data_count += 1
                             else:
@@ -88,22 +90,23 @@ for year in range(start_year, end_year+1):
                         if line.count(',') == 2:
                             col = int(line.split(',')[0])
                             row = int(line.split(',')[1])
-
                             if j >= opening_moves[game_i]:#only learn non opening moves
                                 label = numpy.zeros(shape=(20, 20))
                                 label[row-1][col-1] = 1
                                 labels[i] = label.ravel().astype(int)
                                 data[i] = board.astype(int)
                                 #invert board so all moves are from black perspective
-                                if current_player == -1:
-                                    data[i] = numpy.where(data[i]==1, 3, data[i])
-                                    data[i] = numpy.where(data[i]==-1, 1, data[i])
-                                    data[i] = numpy.where(data[i]==3, 1, data[i])
+                                if current_player < 0:
+                                    data[i] = numpy.where(data[i] > 0, data[i] + 1000, data[i])
+                                    data[i] = numpy.where(data[i] < 0, data[i] * -1, data[i])
+                                    data[i] = numpy.where(data[i] > 1000, data[i] - 1000, data[i])
                                 i += 1
 
                             board[row-1][col-1] = current_player
                             j += 1
                             current_player *= -1
+                            if current_player > 0:
+                                current_player += 1
                             if print_board_states:
                                 os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
                 game_i += 1
