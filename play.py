@@ -44,8 +44,11 @@ def won(row, col, color):
     print(color)
   return w
 
+def same_color(first, second):
+  return True if (first < 0 and second < 0) or (first > 0 and second > 0) else False
+
 def connected(row, col, color, direction):
-  if row >= 20 or col >= 20 or row < 0 or col < 0 or board[row][col] != color:
+  if row >= 20 or col >= 20 or row < 0 or col < 0 or not same_color(board[row][col], color):
     return 0
   if direction == 'horizontal':
     return 1 + connected(row, col - 1, color, 'left') + connected(row, col + 1, color, 'right')
@@ -100,6 +103,7 @@ def predict(color):
 row = 0
 col = 0
 player = starting_color
+move_index = int((board != 0).sum() / 2) + 1
 
 while True:
   if human_player_exists and player != starting_color:
@@ -111,9 +115,11 @@ while True:
         break    
   else:
     (row, col) = predict(player)
-  board[row][col] = 1 if player == "BLACK" else -1
+  board[row][col] = move_index if player == "BLACK" else (move_index*-1)
   if not silent:
     os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
   if won(row, col, 1 if player == "BLACK" else -1):
     break
   player = "WHITE" if player == "BLACK" else "BLACK"
+  if player == "BLACK":
+    move_index += 1
