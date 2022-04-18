@@ -6,9 +6,8 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = False
+dev_mode = True
 print_board_states = False
-# output_format = 'TXT'
 output_format = 'BIN'
 opening_moves = []
 openings = numpy.zeros(shape=(12, 20, 20))
