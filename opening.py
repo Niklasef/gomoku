@@ -10,8 +10,6 @@ player = 1
 for move in moves.split(' '):
     opening[int(move.split(',')[1])+10][int(move.split(',')[0])+10] = player
     player *= -1
-    if player > 0:
-        player += 1
 opening_ser = numpy.array2string(opening.ravel().astype(int), max_line_width=10000, separator='_').replace(' ','')
 if silent:
     print(opening_ser)
