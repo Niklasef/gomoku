@@ -83,21 +83,18 @@ def connected(row, col, color, direction):
 
 def predict(color):
   board_copy = np.copy(board)
+  if model_black_name in non_historic_index_models:
+    board_copy = np.where(board_copy > 0, 1, board_copy)
+    board_copy = np.where(board_copy < 0, -1, board_copy)
   if color == 'BLACK':
-    if model_black_name in non_historic_index_models:
-      board_copy = np.where(board_copy > 0, 1, board_copy)
-      board_copy = np.where(board_copy < 0, -1, board_copy)
     m = np.zeros(shape=(1, 20, 20, 1))
     m[0] = tf.expand_dims(board_copy, axis=-1)
     predictions_percent = model_black.predict(m.astype(float))
   if color == 'WHITE':
-    if model_white_name == "cnn-64_5-64_2-64_2-400_3K":
-      board_copy = np.where(board_copy > 0, 1, board_copy)
-      board_copy = np.where(board_copy < 0, -1, board_copy)    
     w_board = board_copy
-    w_board = np.where(w_board==1, 3, w_board)
-    w_board = np.where(w_board==-1, 1, w_board)
-    w_board = np.where(w_board==3, 1, w_board)    
+    w_board = np.where(w_board > 0, 1000+w_board, w_board)
+    w_board = np.where(w_board < 0, (w_board*-1), w_board)
+    w_board = np.where(w_board > 1000, ((w_board-1000)*-1), w_board)    
     w_m = np.zeros(shape=(1, 20, 20, 1))
     w_m[0] = tf.expand_dims(w_board, axis=-1)
     predictions_percent = model_white.predict(w_m.astype(float))    
