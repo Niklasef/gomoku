@@ -1,6 +1,7 @@
 import subprocess
 import numpy
 import os
+from augment import aug
 
 out_directory = 'preped/'
 data_count = 0
@@ -95,25 +96,32 @@ for year in range(start_year, end_year+1):
                                 label[row-1][col-1] = 1
                                 board_param = numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ','')
                                 label_param = numpy.array2string(label.ravel().astype(int), max_line_width=10000, separator='_').replace(' ','')
-
-                                aug = subprocess.check_output(["py.exe", "augment.py", board_param, label_param]).decode("utf-8").strip()
-                                # print(aug)
-                                for a in aug.split(","):
-                                    aug_board = numpy.fromstring(a.split("|")[0].replace('[','').replace(']','').replace('\'',''), dtype=int, sep='_')
-                                    aug_label = numpy.fromstring(a.split("|")[1].replace('[','').replace(']','').replace('\'',''), dtype=int, sep='_')
-                                    # print(aug_board)
-
-                                    data[i] = aug_board.reshape(20,20).astype(int)
-                                    labels[i] = aug_label.astype(int)
+                                a_result = aug(board, label)
+                                for a in a_result:
+                                    data[i] = a[0].astype(int)
+                                    labels[i] = a[1].ravel().astype(int)
                                     #invert board so all moves are from black perspective
                                     if current_player == -1:
                                         data[i] = numpy.where(data[i]==1, 3, data[i])
                                         data[i] = numpy.where(data[i]==-1, 1, data[i])
                                         data[i] = numpy.where(data[i]==3, 1, data[i])
-                                    i += 1
 
-                                # data[i] = board.astype(int)
-                                # labels[i] = label.ravel().astype(int)
+                                    i += 1
+                                    print("i = " + str(i))
+                                # aug = subprocess.check_output(["py.exe", "augment.py", board_param, label_param]).decode("utf-8").strip()
+                                # for a in aug.split(","):
+                                #     aug_board = numpy.fromstring(a.split("|")[0].replace('[','').replace(']','').replace('\'',''), dtype=int, sep='_')
+                                #     aug_label = numpy.fromstring(a.split("|")[1].replace('[','').replace(']','').replace('\'',''), dtype=int, sep='_')
+
+                                #     data[i] = aug_board.reshape(20,20).astype(int)
+                                #     labels[i] = aug_label.astype(int)
+                                #     #invert board so all moves are from black perspective
+                                #     if current_player == -1:
+                                #         data[i] = numpy.where(data[i]==1, 3, data[i])
+                                #         data[i] = numpy.where(data[i]==-1, 1, data[i])
+                                #         data[i] = numpy.where(data[i]==3, 1, data[i])
+                                #     i += 1
+                                #     print("i = " + str(i))
 
                             board[row-1][col-1] = current_player
 
