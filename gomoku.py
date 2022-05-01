@@ -76,13 +76,13 @@ def p(model, board, color):
 
 def predict(model, board, color):
   predictions = p(model, board, color)
-  first = minimax(model, np.copy(board), color, predictions[0], color, 10, 1)
-  second = minimax(model, np.copy(board), color, predictions[1], color, 10, 1)
-  third = minimax(model, np.copy(board), color, predictions[2], color, 10, 1)
+  first = minimax(model, np.copy(board), color, predictions[0], color, 1, 1, 3)
+  second = minimax(model, np.copy(board), color, predictions[1], color, 1, 1, 3)
+  third = minimax(model, np.copy(board), color, predictions[2], color, 1, 1, 3)
 
-  print("first = " + str(first))
-  print("second = " + str(second))
-  print("third = " + str(third))  
+  print("p first = " + str(first))
+  print("p second = " + str(second))
+  print("p third = " + str(third))  
 
   if first >= second and first >= third:
     return predictions[0]
@@ -90,15 +90,39 @@ def predict(model, board, color):
     return predictions[1]
   return predictions[2]
 
-def minimax(model, board, color, prediction, initial_color, play_outs, i):
-  predictions = []
-  while not won(prediction[0], prediction[1], 1 if color == "BLACK" else -1, board):
-      board[prediction[0]][prediction[1]] = 1 if color == "BLACK" else -1
-      # os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
-      color = "WHITE" if color == "BLACK" else "BLACK"
-      predictions = p(model, board, color)
-      prediction = predictions[0]
-  value = 1 if color == initial_color else -1
-  if i < play_outs and predictions:
-    return minimax(model, board, color, predictions[1], initial_color, play_outs, i+1) + minimax(model, board, color, predictions[2], initial_color, play_outs, i+1) + value
-  return value
+def minimax(model, board, color, prediction, initial_color, depth, i, play_outs):
+  if won(prediction[0], prediction[1], 1 if color == "BLACK" else -1, board):
+    return 1 if color == initial_color else -1
+
+  board[prediction[0]][prediction[1]] = 1 if color == "BLACK" else -1
+  predictions = p(model, board, "WHITE" if color == "BLACK" else "BLACK")
+  if i <= depth:
+    first = minimax(model, np.copy(board), "WHITE" if color == "BLACK" else "BLACK", predictions[0], color, depth, i + 1, play_outs)
+    second = minimax(model, np.copy(board), "WHITE" if color == "BLACK" else "BLACK", predictions[1], color, depth, i + 1, play_outs)
+    third = minimax(model, np.copy(board), "WHITE" if color == "BLACK" else "BLACK", predictions[2], color, depth, i + 1, play_outs)
+    is_maximizing = color == initial_color
+    print("is_maximizing = " + str(is_maximizing))
+    print("first = " + str(first))
+    print("second = " + str(second))
+    print("third = " + str(third))  
+
+    return max([first, second, third]) if is_maximizing else min([first, second, third])
+    
+  return playout(model, board, "WHITE" if color == "BLACK" else "BLACK", predictions, initial_color, 1, play_outs)[1]
+
+def playout(model, board, color, predictions, initial_color, i, play_outs):
+  if won(predictions[0][0], predictions[0][1], 1 if color == "BLACK" else -1, board):
+    return (i+1,(1 if color == initial_color else -1))
+
+  board[predictions[0][0]][predictions[0][1]] = 1 if color == "BLACK" else -1
+  color = "WHITE" if color == "BLACK" else "BLACK"
+  new_predictions = p(model, board, color)
+  result_one = (0,0)
+  result_two = (0,0)
+  result_three = (0,0)
+  result_one = playout(model, board, color, new_predictions, initial_color, i, play_outs)
+  if result_one[0] > 1 and result_one[0] <= play_outs:
+      result_two = playout(model, board, color, [new_predictions[1], new_predictions[2]], initial_color, result_one[0], play_outs)
+      if result_two[0] > 1 and result_two[0] <= play_outs:
+        result_three = playout(model, board, color, [new_predictions[2]], initial_color, result_two[0], play_outs)
+  return ((result_one[0]+result_two[0]+result_three[0]),(result_one[1]+result_two[1]+result_three[1]))
