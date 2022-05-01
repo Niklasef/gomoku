@@ -44,7 +44,7 @@ def connected(row, col, color, direction, board):
   if direction == 'up':
     return 1 + connected(row - 1, col, color, direction, board)
 
-def predict(model, board, color):
+def p(model, board, color):
   board_copy = np.copy(board)
   m = np.zeros(shape=(1, 20, 20, 1))
   if color == 'BLACK':
@@ -64,7 +64,14 @@ def predict(model, board, color):
     if board[p_ravel[0]][p_ravel[1]] == 0:
       prediction = p_ravel
       break
+  return prediction
 
-  
+def predict(model, board, color):
+  prediction = p(model, board, color)
+  # minimax(model, np.copy(board), color, prediction)
 
   return prediction
+
+def minimax(model, board, color, prediction):
+  while not won(prediction[0], prediction[1], color, board):
+      board[prediction[0]][prediction[1]] = 1 if color == "BLACK" else -1
