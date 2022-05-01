@@ -46,18 +46,17 @@ def connected(row, col, color, direction, board):
 
 def predict(model, board, color):
   board_copy = np.copy(board)
+  m = np.zeros(shape=(1, 20, 20, 1))
   if color == 'BLACK':
-    m = np.zeros(shape=(1, 20, 20, 1))
     m[0] = tf.expand_dims(board_copy, axis=-1)
-    predictions_percent = model.predict(m.astype(float))
-  if color == 'WHITE':
+  elif color == 'WHITE':
     w_board = board_copy
     w_board = np.where(w_board > 0, 1000+w_board, w_board)
     w_board = np.where(w_board < 0, (w_board*-1), w_board)
     w_board = np.where(w_board > 1000, ((w_board-1000)*-1), w_board)    
-    w_m = np.zeros(shape=(1, 20, 20, 1))
-    w_m[0] = tf.expand_dims(w_board, axis=-1)
-    predictions_percent = model.predict(w_m.astype(float))    
+    m[0] = tf.expand_dims(w_board, axis=-1)
+
+  predictions_percent = model.predict(m.astype(float))
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
   prediction = (0, 0)
   for p in sorted_predictions:
@@ -65,4 +64,7 @@ def predict(model, board, color):
     if board[p_ravel[0]][p_ravel[1]] == 0:
       prediction = p_ravel
       break
+
+  
+
   return prediction
