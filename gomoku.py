@@ -55,30 +55,50 @@ def p(model, board, color):
     m[0] = tf.expand_dims(board_copy, axis=-1)
   elif color == 'WHITE':
     w_board = board_copy
-    w_board = np.where(w_board > 0, 1000+w_board, w_board)
-    w_board = np.where(w_board < 0, (w_board*-1), w_board)
-    w_board = np.where(w_board > 1000, ((w_board-1000)*-1), w_board)    
+    w_board = np.where(w_board > 0, 2, w_board)
+    w_board = np.where(w_board < 0, 1, w_board)
+    w_board = np.where(w_board == 2, -1, w_board)    
     m[0] = tf.expand_dims(w_board, axis=-1)
 
   predictions_percent = model.predict(m.astype(float))
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
-  prediction = (0, 0)
+  predictions = []
+  n = 3
+  i = 0
   for p in sorted_predictions:
     p_ravel = np.unravel_index(p, (20, 20))
     if board[p_ravel[0]][p_ravel[1]] == 0:
-      prediction = p_ravel
-      break
-  return prediction
+      predictions.append(p_ravel)
+      i += 1
+      if i == n:
+        break
+  return predictions
 
 def predict(model, board, color):
-  prediction = p(model, board, color)
-  minimax(model, np.copy(board), color, prediction, color, 2, 1)
+  predictions = p(model, board, color)
+  first = minimax(model, np.copy(board), color, predictions[0], color, 10, 1)
+  second = minimax(model, np.copy(board), color, predictions[1], color, 10, 1)
+  third = minimax(model, np.copy(board), color, predictions[2], color, 10, 1)
 
-  return prediction
+  print("first = " + str(first))
+  print("second = " + str(second))
+  print("third = " + str(third))  
+
+  if first >= second and first >= third:
+    return predictions[0]
+  if second >= third:
+    return predictions[1]
+  return predictions[2]
 
 def minimax(model, board, color, prediction, initial_color, play_outs, i):
+  predictions = []
   while not won(prediction[0], prediction[1], 1 if color == "BLACK" else -1, board):
       board[prediction[0]][prediction[1]] = 1 if color == "BLACK" else -1
       # os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
       color = "WHITE" if color == "BLACK" else "BLACK"
-      prediction = p(model, board, color)
+      predictions = p(model, board, color)
+      prediction = predictions[0]
+  value = 1 if color == initial_color else -1
+  if i < play_outs and predictions:
+    return minimax(model, board, color, predictions[1], initial_color, play_outs, i+1) + minimax(model, board, color, predictions[2], initial_color, play_outs, i+1) + value
+  return value
