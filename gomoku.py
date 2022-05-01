@@ -7,9 +7,9 @@ import tensorflow as tf
 from tensorflow import keras
 
 def won(row, col, color, board):
-  board_copy = np.copy(board)
-  board_copy[row][col] = 1 if color == "BLACK" else -1
-  w = connected(row, col, color, 'horizontal', board_copy) >= 5 or connected(row, col, color, 'vertical', board_copy) >= 5 or connected(row, col, color, 'diagonal-1', board_copy) >= 5 or connected(row, col, color, 'diagonal-2', board_copy) >= 5
+  # board_copy = np.copy(board)
+  # board_copy[row][col] = 1 if color == "BLACK" else -1
+  w = connected(row, col, color, 'horizontal', board, True) >= 5 or connected(row, col, color, 'vertical', board, True) >= 5 or connected(row, col, color, 'diagonal-1', board, True) >= 5 or connected(row, col, color, 'diagonal-2', board, True) >= 5
   if w:
     print(color)
   return w
@@ -17,36 +17,36 @@ def won(row, col, color, board):
 def same_color(first, second):
   return True if (first < 0 and second < 0) or (first > 0 and second > 0) else False
 
-def connected(row, col, color, direction, board):
-  if row >= 20 or col >= 20 or row < 0 or col < 0 or not same_color(board[row][col], color):
+def connected(row, col, color, direction, board, initial):
+  if row >= 20 or col >= 20 or row < 0 or col < 0 or (not same_color(board[row][col], color) and not initial):
     return 0
   if direction == 'horizontal':
-    return 1 + connected(row, col - 1, color, 'left', board) + connected(row, col + 1, color, 'right', board)
+    return 1 + connected(row, col - 1, color, 'left', board, False) + connected(row, col + 1, color, 'right', board, False)
   if direction == 'left':
-    return 1 + connected(row, col - 1, color, direction, board)
+    return 1 + connected(row, col - 1, color, direction, board, False)
   if direction == 'right':
-    return 1 + connected(row, col + 1, color, direction, board)
+    return 1 + connected(row, col + 1, color, direction, board, False)
 
   if direction == "diagonal-1":
-    return 1 + connected(row + 1, col + 1, color, 'right-down', board) + connected(row - 1, col - 1, color, 'left-up', board)
+    return 1 + connected(row + 1, col + 1, color, 'right-down', board, False) + connected(row - 1, col - 1, color, 'left-up', board, False)
   if direction == 'right-down':
-    return 1 + connected(row + 1, col + 1, color, direction, board)
+    return 1 + connected(row + 1, col + 1, color, direction, board, False)
   if direction == 'left-up':
-    return 1 + connected(row - 1, col - 1, color, direction, board)
+    return 1 + connected(row - 1, col - 1, color, direction, board, False)
   
   if direction == "diagonal-2":
-    return 1 + connected(row + 1, col - 1, color, 'left-down', board) + connected(row - 1, col + 1, color, 'right-up', board)    
+    return 1 + connected(row + 1, col - 1, color, 'left-down', board, False) + connected(row - 1, col + 1, color, 'right-up', board, False)
   if direction == 'left-down':
-    return 1 + connected(row + 1, col - 1, color, direction, board)
+    return 1 + connected(row + 1, col - 1, color, direction, board, False)
   if direction == 'right-up':
-    return 1 + connected(row - 1, col + 1, color, direction, board)
+    return 1 + connected(row - 1, col + 1, color, direction, board, False)
 
   if direction == 'vertical':
-    return 1 + connected(row + 1, col, color, 'down', board) + connected(row - 1, col, color, 'up', board)
+    return 1 + connected(row + 1, col, color, 'down', board, False) + connected(row - 1, col, color, 'up', board, False)
   if direction == 'down':
-    return 1 + connected(row + 1, col, color, direction, board)
+    return 1 + connected(row + 1, col, color, direction, board, False)
   if direction == 'up':
-    return 1 + connected(row - 1, col, color, direction, board)
+    return 1 + connected(row - 1, col, color, direction, board, False)
 
 def p(model, board, color):
   board_copy = np.copy(board)
@@ -72,17 +72,13 @@ def p(model, board, color):
 
 def predict(model, board, color):
   prediction = p(model, board, color)
-  # minimax(model, np.copy(board), color, prediction, color, 2, 1)
+  minimax(model, np.copy(board), color, prediction, color, 2, 1)
 
   return prediction
 
 def minimax(model, board, color, prediction, initial_color, play_outs, i):
-  while True:
+  while not won(prediction[0], prediction[1], 1 if color == "BLACK" else -1, board):
       board[prediction[0]][prediction[1]] = 1 if color == "BLACK" else -1
-      os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
-      if won(prediction[0], prediction[1], 1 if color == "BLACK" else -1, board):
-        if i < play_outs:
-          return minimax(model, board, color, prediction, initial_color, play_outs, i + 1)
-        return 1 if color == initial_color else -1
+      # os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
       color = "WHITE" if color == "BLACK" else "BLACK"
       prediction = p(model, board, color)
