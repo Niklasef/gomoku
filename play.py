@@ -56,9 +56,12 @@ while True:
         break    
   else:
     (row, col) = predict(model_black if player == "BLACK" else model_white, board, player)
+  if won(row, col, 1 if player == "BLACK" else -1, board):
+    board[row][col] = 1 if player == "BLACK" else -1
+    if not silent:
+      os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+    break
   board[row][col] = 1 if player == "BLACK" else -1
   if not silent:
     os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
-  if won(row, col, 1 if player == "BLACK" else -1, board):
-    break
   player = "WHITE" if player == "BLACK" else "BLACK"

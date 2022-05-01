@@ -1,11 +1,15 @@
 from asyncio.windows_events import NULL
+from copy import copy
+import os
 
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
 def won(row, col, color, board):
-  w = connected(row, col, color, 'horizontal', board) >= 5 or connected(row, col, color, 'vertical', board) >= 5 or connected(row, col, color, 'diagonal-1', board) >= 5 or connected(row, col, color, 'diagonal-2', board) >= 5
+  board_copy = np.copy(board)
+  board_copy[row][col] = 1 if color == "BLACK" else -1
+  w = connected(row, col, color, 'horizontal', board_copy) >= 5 or connected(row, col, color, 'vertical', board_copy) >= 5 or connected(row, col, color, 'diagonal-1', board_copy) >= 5 or connected(row, col, color, 'diagonal-2', board_copy) >= 5
   if w:
     print(color)
   return w
@@ -68,10 +72,17 @@ def p(model, board, color):
 
 def predict(model, board, color):
   prediction = p(model, board, color)
-  # minimax(model, np.copy(board), color, prediction)
+  # minimax(model, np.copy(board), color, prediction, color, 2, 1)
 
   return prediction
 
-def minimax(model, board, color, prediction):
-  while not won(prediction[0], prediction[1], color, board):
+def minimax(model, board, color, prediction, initial_color, play_outs, i):
+  while True:
       board[prediction[0]][prediction[1]] = 1 if color == "BLACK" else -1
+      os.system("python print_board.py " + np.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+      if won(prediction[0], prediction[1], 1 if color == "BLACK" else -1, board):
+        if i < play_outs:
+          return minimax(model, board, color, prediction, initial_color, play_outs, i + 1)
+        return 1 if color == initial_color else -1
+      color = "WHITE" if color == "BLACK" else "BLACK"
+      prediction = p(model, board, color)
