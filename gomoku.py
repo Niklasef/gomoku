@@ -1,11 +1,15 @@
 from asyncio.windows_events import NULL
 from copy import copy
 import os
+verbose=0
+os.add_dll_directory("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/bin")
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
+tf.get_logger().setLevel('ERROR')
 def won(row, col, color, board):
   # board_copy = np.copy(board)
   # board_copy[row][col] = 1 if color == "BLACK" else -1
@@ -60,7 +64,10 @@ def p(model, board, color):
     w_board = np.where(w_board == 2, -1, w_board)    
     m[0] = tf.expand_dims(w_board, axis=-1)
 
-  predictions_percent = model.predict(m.astype(float))
+  os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+  tf.get_logger().setLevel('ERROR')
+  # predictions_percent = model.predict(m.astype(float), verbose=0)
+  predictions_percent = model(m.astype(float), training=False)
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
   predictions = []
   n = 2
@@ -76,8 +83,9 @@ def p(model, board, color):
 
 def predict(model, board, color):
   predictions = p(model, board, color)
-  first = minimax(model, np.copy(board), color, predictions[0], color, 2, 1, 20)
-  second = minimax(model, np.copy(board), color, predictions[1], color, 2, 1, 20)
+  return predictions[0]
+  first = minimax(model, np.copy(board), color, predictions[0], color, 3, 1, 40)
+  second = minimax(model, np.copy(board), color, predictions[1], color, 3, 1, 40)
 
   print("p first = " + str(first))
   print("p second = " + str(second))
@@ -105,6 +113,8 @@ def minimax(model, board, color, prediction, initial_color, depth, i, play_outs)
   return playout(model, board, "WHITE" if color == "BLACK" else "BLACK", predictions, initial_color, 1, play_outs)[1]
 
 def playout(model, board, color, predictions, initial_color, i, play_outs):
+  if not predictions:
+    return (i+1, 0)
   if won(predictions[0][0], predictions[0][1], 1 if color == "BLACK" else -1, board):
     return (i+1,(1 if color == initial_color else -1))
 
@@ -114,6 +124,6 @@ def playout(model, board, color, predictions, initial_color, i, play_outs):
   result_one = (0,0)
   result_two = (0,0)
   result_one = playout(model, board, color, new_predictions, initial_color, i, play_outs)
-  if result_one[0] > 1 and result_one[0] <= play_outs:
+  if result_one[0] > 1 and result_one[0] <= play_outs and new_predictions and len(new_predictions) > 1 and result_one:
       result_two = playout(model, board, color, [new_predictions[1]], initial_color, result_one[0], play_outs)
   return ((result_one[0]+result_two[0]),(result_one[1]+result_two[1]))

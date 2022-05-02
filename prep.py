@@ -55,8 +55,8 @@ for year in range(start_year, end_year+1):
                                     break                            
 
 print('move count = ' + str(data_count))
-data_count = data_count * 4
-print('move count including augmentations = ' + str(data_count))
+# data_count = data_count * 2
+# print('move count including augmentations = ' + str(data_count))
 print('opening_moves length = ' + str(len(opening_moves)))
 data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
