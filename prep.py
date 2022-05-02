@@ -5,7 +5,7 @@ from augment import aug
 
 out_directory = 'preped/'
 data_count = 0
-start_year = 2020
+start_year = 2018
 end_year = 2020
 dev_mode = False
 print_board_states = False
