@@ -21,15 +21,6 @@ def aug(board, label):
   board_flip_rot_2 = np.fliplr(np.rot90(board, k=2, axes=(0, 1)))
   board_flip_rot_3 = np.fliplr(np.rot90(board, k=1, axes=(1, 0)))
 
-  # if not silent:
-  #   os.system("python print_board.py " + board_rot_1)
-  #   os.system("python print_board.py " + board_rot_2)
-  #   os.system("python print_board.py " + board_rot_3)
-  #   os.system("python print_board.py " + board_flip)
-  #   os.system("python print_board.py " + board_flip_rot_1)
-  #   os.system("python print_board.py " + board_flip_rot_2)
-  #   os.system("python print_board.py " + board_flip_rot_3)
-
 
   label_rot_1 = np.rot90(label, k=1, axes=(0, 1))
   label_rot_2 = np.rot90(label, k=2, axes=(0, 1))
@@ -39,24 +30,13 @@ def aug(board, label):
   label_flip_rot_2 = np.fliplr(np.rot90(label, k=2, axes=(0, 1)))
   label_flip_rot_3 = np.fliplr(np.rot90(label, k=1, axes=(1, 0)))
 
-  return [[board, label],[board_rot_1, label_rot_1],[board_rot_2, label_rot_2],[board_rot_3, label_rot_3],[board_flip, label_flip],[board_flip_rot_1, label_flip_rot_1],[board_flip_rot_2, label_flip_rot_2],[board_flip_rot_3, label_flip_rot_3]]
-
-  # if not silent:
-  #   os.system("python print_board.py " + label_rot_1)
-  #   os.system("python print_board.py " + label_rot_2)
-  #   os.system("python print_board.py " + label_rot_3)
-  #   os.system("python print_board.py " + label_flip)
-  #   os.system("python print_board.py " + label_flip_rot_1)
-  #   os.system("python print_board.py " + label_flip_rot_2)
-  #   os.system("python print_board.py " + label_flip_rot_3)
-
-  # original = to_string(board) + "|" + to_string(label)
-  # aug_1 = board_rot_1 + "|" + label_rot_1
-  # aug_2 = board_rot_2 + "|" + label_rot_2
-  # aug_3 = board_rot_3 + "|" + label_rot_3
-  # aug_4 = board_flip + "|" + label_flip
-  # aug_5 = board_flip_rot_1 + "|" + label_flip_rot_1
-  # aug_6 = board_flip_rot_2 + "|" + label_flip_rot_2
-  # aug_7 = board_flip_rot_3 + "|" + label_flip_rot_3
-
-  # print([original, aug_1, aug_2, aug_3, aug_4, aug_5, aug_6, aug_7])
+  return [
+    [board, label],
+    [board_rot_1, label_rot_1],
+    [board_rot_2, label_rot_2],
+    [board_rot_3, label_rot_3],
+    # [board_flip, label_flip],
+    # [board_flip_rot_1, label_flip_rot_1],
+    # [board_flip_rot_2, label_flip_rot_2],
+    # [board_flip_rot_3, label_flip_rot_3]
+  ]

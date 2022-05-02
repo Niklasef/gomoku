@@ -7,11 +7,11 @@ out_directory = 'preped/'
 data_count = 0
 start_year = 2020
 end_year = 2020
-dev_mode = True
+dev_mode = False
 print_board_states = False
 output_format = 'BIN'
 opening_moves = []
-openings = numpy.zeros(shape=(12, 20, 20))
+openings = numpy.zeros(shape=(24, 20, 20))
 i = 0
 
 with open('openings_freestyle.txt') as f:
@@ -55,10 +55,9 @@ for year in range(start_year, end_year+1):
                                     break                            
 
 print('move count = ' + str(data_count))
-data_count = data_count * 8
+data_count = data_count * 4
 print('move count including augmentations = ' + str(data_count))
 print('opening_moves length = ' + str(len(opening_moves)))
-print('opening_moves' + str(opening_moves))
 data = numpy.zeros(shape=(data_count, 20, 20))
 labels = numpy.zeros(shape=(data_count, 400))
 i = 0
@@ -94,8 +93,6 @@ for year in range(start_year, end_year+1):
                             if j >= opening_moves[game_i]:#only learn non opening moves
                                 label = numpy.zeros(shape=(20, 20))
                                 label[row-1][col-1] = 1
-                                board_param = numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ','')
-                                label_param = numpy.array2string(label.ravel().astype(int), max_line_width=10000, separator='_').replace(' ','')
                                 a_result = aug(board, label)
                                 for a in a_result:
                                     data[i] = a[0].astype(int)
@@ -107,28 +104,13 @@ for year in range(start_year, end_year+1):
                                         data[i] = numpy.where(data[i]==3, 1, data[i])
 
                                     i += 1
-                                    print("i = " + str(i))
-                                # aug = subprocess.check_output(["py.exe", "augment.py", board_param, label_param]).decode("utf-8").strip()
-                                # for a in aug.split(","):
-                                #     aug_board = numpy.fromstring(a.split("|")[0].replace('[','').replace(']','').replace('\'',''), dtype=int, sep='_')
-                                #     aug_label = numpy.fromstring(a.split("|")[1].replace('[','').replace(']','').replace('\'',''), dtype=int, sep='_')
-
-                                #     data[i] = aug_board.reshape(20,20).astype(int)
-                                #     labels[i] = aug_label.astype(int)
-                                #     #invert board so all moves are from black perspective
-                                #     if current_player == -1:
-                                #         data[i] = numpy.where(data[i]==1, 3, data[i])
-                                #         data[i] = numpy.where(data[i]==-1, 1, data[i])
-                                #         data[i] = numpy.where(data[i]==3, 1, data[i])
-                                #     i += 1
-                                #     print("i = " + str(i))
 
                             board[row-1][col-1] = current_player
-
                             j += 1
                             current_player *= -1
                             if print_board_states:
                                 os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
+                    print("i = " + str(i))
                 game_i += 1
             group = group +1
 
@@ -140,8 +122,8 @@ numpy.random.shuffle(shuffled_index)
 
 if numpy.array_equal(board, openings[10]):
     print("Found opening " + str(filename))
-train_count = int((data_count) * 0.7)
-test_count = int((data_count) * 0.15)
+train_count = int((data_count) * 0.99)
+test_count = int((data_count) * 0)
 val_count = int(data_count - train_count - test_count)
 print('train_count = ' + str(train_count))
 print('test_count = ' + str(test_count))
