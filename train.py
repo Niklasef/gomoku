@@ -33,15 +33,9 @@ print(train_labels.shape)
 # Setup Neural Net
 model = keras.models.Sequential([
     keras.layers.Conv2D(filters=64, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=64, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=128, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=128, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
+    keras.layers.Conv2D(filters=64, kernel_size=(2,2), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.Conv2D(filters=64, kernel_size=(2,2), strides=(1,1), activation='relu', padding="same"),
     keras.layers.Flatten(),
-    keras.layers.Dense(800, activation='softmax'),
     keras.layers.Dense(400, activation='softmax')
 ])
 
@@ -57,7 +51,7 @@ val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
 val_dataset = val_dataset.batch(16)
 
 #### Train Model ####
-history = model.fit(train_dataset, epochs=2, validation_data=val_dataset)
+history = model.fit(train_dataset, epochs=10, validation_data=val_dataset)
 
 label = subprocess.check_output(["git", "describe"]).decode("utf-8").strip()
 print(label)
