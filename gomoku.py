@@ -70,10 +70,10 @@ def p(model, board, color):
   predictions_percent = model(m.astype(float), training=False)
   sorted_predictions = np.argsort(predictions_percent, axis=1)[0][::-1]
   predictions = []
-  n = 2
+  n = 3
   i = 0
-  for p in sorted_predictions:
-    p_ravel = np.unravel_index(p, (20, 20))
+  for p1 in sorted_predictions:
+    p_ravel = np.unravel_index(p1, (20, 20))
     if board[p_ravel[0]][p_ravel[1]] == 0:
       predictions.append(p_ravel)
       i += 1
@@ -84,8 +84,8 @@ def p(model, board, color):
 def predict(model, board, color):
   predictions = p(model, board, color)
   return predictions[0]
-  first = minimax(model, np.copy(board), color, predictions[0], color, 3, 1, 40)
-  second = minimax(model, np.copy(board), color, predictions[1], color, 3, 1, 40)
+  first = minimax(model, np.copy(board), color, predictions[0], color, 4, 1, 100)
+  second = minimax(model, np.copy(board), color, predictions[1], color, 4, 1, 100)
 
   print("p first = " + str(first))
   print("p second = " + str(second))
@@ -113,17 +113,17 @@ def minimax(model, board, color, prediction, initial_color, depth, i, play_outs)
   return playout(model, board, "WHITE" if color == "BLACK" else "BLACK", predictions, initial_color, 1, play_outs)[1]
 
 def playout(model, board, color, predictions, initial_color, i, play_outs):
-  if not predictions:
-    return (i+1, 0)
   if won(predictions[0][0], predictions[0][1], 1 if color == "BLACK" else -1, board):
-    return (i+1,(1 if color == initial_color else -1))
+    return (i+1, (1 if color == initial_color else -1))
 
   board[predictions[0][0]][predictions[0][1]] = 1 if color == "BLACK" else -1
   color = "WHITE" if color == "BLACK" else "BLACK"
   new_predictions = p(model, board, color)
+  if not new_predictions or len(new_predictions) == 0:
+    return (1,0)
   result_one = (0,0)
   result_two = (0,0)
-  result_one = playout(model, board, color, new_predictions, initial_color, i, play_outs)
-  if result_one[0] > 1 and result_one[0] <= play_outs and new_predictions and len(new_predictions) > 1 and result_one:
+  result_one = playout(model, np.copy(board), color, new_predictions, initial_color, i, play_outs)
+  if result_one[0] <= play_outs and len(new_predictions) > 1:
       result_two = playout(model, board, color, [new_predictions[1]], initial_color, result_one[0], play_outs)
   return ((result_one[0]+result_two[0]),(result_one[1]+result_two[1]))

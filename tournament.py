@@ -20,10 +20,6 @@ openings = [
     "-5,9, -3,9, -1,7, 1,9, 3,9, -1,5"
 ]
 
-non_historic_index_models = []
-if len(sys.argv) > 1:
-    non_historic_index_models = sys.argv[1]
-
 models = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
 opponents = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
 results = {}
@@ -36,7 +32,7 @@ for model in models:
     for opponent in opponents:
         for opening in openings:
             print(f'"{model}" vs "{opponent}"')
-            winner = int(subprocess.check_output(["py.exe", "play.py", model, opponent, opening, "silent", non_historic_index_models]).decode("utf-8").strip())
+            winner = int(subprocess.check_output(["py.exe", "play.py", model, opponent, opening, "silent"]).decode("utf-8").strip())
             if winner == 1:
                 results[model] += 1
                 print(f'"{model}" won')
@@ -44,7 +40,7 @@ for model in models:
                 results[opponent] += 1
                 print(f'"{opponent}" won')
             print(f'"{opponent}" vs "{model}"')
-            winner = int(subprocess.check_output(["py.exe", "play.py", opponent, model, opening, "silent", non_historic_index_models]).decode("utf-8").strip())
+            winner = int(subprocess.check_output(["py.exe", "play.py", opponent, model, opening, "silent"]).decode("utf-8").strip())
             if winner == 1:
                 results[opponent] += 1
                 print(f'"{opponent}" won')
