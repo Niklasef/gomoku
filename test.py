@@ -7,13 +7,13 @@ from tensorflow import keras
 # input_format = 'TXT'
 input_format = 'BIN'
 if input_format == 'TXT':
-  test_data = np.genfromtxt('preped/test_data.npy', delimiter=',')
+  test_data = np.genfromtxt('preped/val_data.npy', delimiter=',')
 else:
-  test_data = np.load('preped/test_data.npy')
+  test_data = np.load('preped/val_data.npy')
 if input_format == 'TXT':
-  test_labels = np.genfromtxt('preped/test_labels.npy', delimiter=',')
+  test_labels = np.genfromtxt('preped/val_labels.npy', delimiter=',')
 else:
-  test_labels = np.load('preped/test_labels.npy')
+  test_labels = np.load('preped/val_labels.npy')
 
 # Load model
 model = keras.models.load_model('models/' + sys.argv[1])
