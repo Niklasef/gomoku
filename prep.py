@@ -8,7 +8,7 @@ data_count = 0
 start_year = 2018
 end_year = 2020
 dev_mode = False
-print_board_states = False
+visualize = False
 output_format = 'BIN'
 opening_moves = []
 openings = numpy.zeros(shape=(24, 20, 20))
@@ -108,7 +108,7 @@ for year in range(start_year, end_year+1):
                             board[row-1][col-1] = current_player
                             j += 1
                             current_player *= -1
-                            if print_board_states:
+                            if visualize:
                                 os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
                     print("i = " + str(i))
                 game_i += 1
