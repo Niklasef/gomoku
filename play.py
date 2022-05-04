@@ -1,7 +1,7 @@
 from asyncio.windows_events import NULL
 import os
 import subprocess
-os.add_dll_directory("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/bin")
+# os.add_dll_directory("C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/bin")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import sys
