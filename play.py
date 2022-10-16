@@ -29,7 +29,7 @@ if len(sys.argv) >= 3:
     model_white_name = sys.argv[2]
     model_white = keras.models.load_model('models/' + model_white_name)
   if len(sys.argv) >= 4:
-    opening_ser = subprocess.check_output(["py.exe", "opening.py", sys.argv[3], "silent"]).decode("utf-8")
+    opening_ser = subprocess.check_output(["python.exe", "opening.py", sys.argv[3], "silent"]).decode("utf-8")
     opening_raveled = np.fromstring(opening_ser.replace('[','').replace(']',''), dtype=int, sep='_')
     board = opening_raveled.reshape(20,20)
     if len(sys.argv) >= 5:

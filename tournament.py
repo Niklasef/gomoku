@@ -32,7 +32,7 @@ for model in models:
     for opponent in opponents:
         for opening in openings:
             print(f'"{model}" vs "{opponent}"')
-            winner = int(subprocess.check_output(["py.exe", "play.py", model, opponent, opening, "silent"]).decode("utf-8").strip())
+            winner = int(subprocess.check_output(["python.exe", "play.py", model, opponent, opening, "silent"]).decode("utf-8").strip())
             if winner == 1:
                 results[model] += 1
                 print(f'"{model}" won')
@@ -40,7 +40,7 @@ for model in models:
                 results[opponent] += 1
                 print(f'"{opponent}" won')
             print(f'"{opponent}" vs "{model}"')
-            winner = int(subprocess.check_output(["py.exe", "play.py", opponent, model, opening, "silent"]).decode("utf-8").strip())
+            winner = int(subprocess.check_output(["python.exe", "play.py", opponent, model, opening, "silent"]).decode("utf-8").strip())
             if winner == 1:
                 results[opponent] += 1
                 print(f'"{opponent}" won')
