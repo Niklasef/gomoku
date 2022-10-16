@@ -6,8 +6,8 @@ from augment import aug
 
 out_directory = 'preped/'
 data_count = 0
-start_year = 2020
-end_year = 2020
+start_year = 2021
+end_year = 2021
 dev_mode = True
 visualize = False
 if len(sys.argv) >= 2 and sys.argv[1] == "visualize":
@@ -19,7 +19,7 @@ i = 0
 
 with open('openings_freestyle.txt') as f:
     for line in f:
-        opening_ser = subprocess.check_output(["py.exe", "opening.py", line, "silent"]).decode("utf-8")
+        opening_ser = subprocess.check_output(["python.exe", "opening.py", line, "silent"]).decode("utf-8")
         opening_raveled = numpy.fromstring(opening_ser.replace('[','').replace(']',''), dtype=int, sep='_')
         openings[i] = opening_raveled.reshape(20,20)
         i += 1
