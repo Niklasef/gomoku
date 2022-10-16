@@ -33,7 +33,6 @@ print(train_labels.shape)
 # Setup Neural Net
 model = keras.models.Sequential([
     keras.layers.Conv2D(filters=64, kernel_size=(7,7), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
-    keras.layers.Conv2D(filters=64, kernel_size=(7,7), strides=(1,1), activation='relu', padding="same"),    
     keras.layers.Conv2D(filters=64, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
     keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
     keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
@@ -53,7 +52,7 @@ val_dataset = tf.data.Dataset.from_tensor_slices((val_data, val_labels))
 val_dataset = val_dataset.batch(16)
 
 #### Train Model ####
-history = model.fit(train_dataset, epochs=4, validation_data=val_dataset)
+history = model.fit(train_dataset, epochs=3, validation_data=val_dataset)
 
 label = subprocess.check_output(["git", "describe"]).decode("utf-8").strip()
 print(label)
