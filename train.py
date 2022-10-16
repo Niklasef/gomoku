@@ -35,6 +35,7 @@ model = keras.models.Sequential([
     keras.layers.Conv2D(filters=64, kernel_size=(7,7), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
     keras.layers.Conv2D(filters=64, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
     keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),    
     keras.layers.Flatten(),
     keras.layers.Dense(400, activation='softmax')
 ])
