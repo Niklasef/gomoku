@@ -35,17 +35,15 @@ for model in models:
             winner = int(subprocess.check_output(["python.exe", "play.py", model, opponent, opening, "silent"]).decode("utf-8").strip())
             if winner == 1:
                 results[model] += 1
-                print(f'"{model}" won')
+                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
             elif winner == -1:
                 results[opponent] += 1
-                print(f'"{opponent}" won')
+                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
             print(f'"{opponent}" vs "{model}"')
             winner = int(subprocess.check_output(["python.exe", "play.py", opponent, model, opening, "silent"]).decode("utf-8").strip())
             if winner == 1:
                 results[opponent] += 1
-                print(f'"{opponent}" won')
+                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
             elif winner == -1:
                 results[model] += 1
-                print(f'"{model}" won')
-
-print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
