@@ -19,6 +19,7 @@ openings = [
     "-10,8, -9,9, -10,7, -8,9, -10,6, -7,9, -5,9, -10,4, -4,9, -10,3, -3,9, -10,2, -10,0, -1,9, -10,-1, 0,9, -10,-2, 1,9, 3,9, -10,-4, 4,9, -10,-5, 5,9, -10,-6, -10,-8, 7,9, -8,7",
     "-5,9, -3,9, -1,7, 1,9, 3,9, -1,5"
 ]
+CPU_CORES = 12
 
 models = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
 opponents = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
@@ -33,21 +34,23 @@ for model in models:
     for opponent in opponents:
         for opening in openings:
             matches.append((model, opponent, opening))
+            matches.append((opponent, model, opening))
 
-for match in matches:
-    print(f'"{match[0]}" vs "{match[1]}"')
-    winner = int(subprocess.check_output(["python.exe", "play.py", match[0], match[1], match[2], "silent"]).decode("utf-8").strip())
-    if winner == 1:
-        results[match[0]] += 1
-        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
-    elif winner == -1:
-        results[match[1]] += 1
-        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
-    print(f'"{match[1]}" vs "{match[0]}"')
-    winner = int(subprocess.check_output(["python.exe", "play.py", match[1], match[0], match[2], "silent"]).decode("utf-8").strip())
-    if winner == 1:
-        results[match[1]] += 1
-        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
-    elif winner == -1:
-        results[match[0]] += 1
-        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+
+grouped_matches = [matches[i:i + CPU_CORES] for i in range(0, len(matches), CPU_CORES)]
+
+for match_group in grouped_matches:
+    processes = []
+    for match in match_group:
+        print(f'"{match[0]}" vs "{match[1]}"')
+        p = subprocess.Popen(["python.exe", "play.py", match[0], match[1], match[2], "silent"], stdout=subprocess.PIPE)
+        processes.append(p)
+    for p in processes:
+        out, err = p.communicate()
+        winner = int(out.decode("utf-8").strip())
+        if winner == 1:
+            results[match[0]] += 1
+            print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+        elif winner == -1:
+            results[match[1]] += 1
+            print(sorted(results.items(), key=lambda x:x[1], reverse=True))
