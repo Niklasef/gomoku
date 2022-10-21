@@ -27,23 +27,27 @@ for model in models:
     results[model] = 0
 print(models)
 
+matches = []
 for model in models:
     opponents = list(filter(lambda x: x != model, opponents))
     for opponent in opponents:
         for opening in openings:
-            print(f'"{model}" vs "{opponent}"')
-            winner = int(subprocess.check_output(["python.exe", "play.py", model, opponent, opening, "silent"]).decode("utf-8").strip())
-            if winner == 1:
-                results[model] += 1
-                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
-            elif winner == -1:
-                results[opponent] += 1
-                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
-            print(f'"{opponent}" vs "{model}"')
-            winner = int(subprocess.check_output(["python.exe", "play.py", opponent, model, opening, "silent"]).decode("utf-8").strip())
-            if winner == 1:
-                results[opponent] += 1
-                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
-            elif winner == -1:
-                results[model] += 1
-                print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+            matches.append((model, opponent, opening))
+
+for match in matches:
+    print(f'"{match[0]}" vs "{match[1]}"')
+    winner = int(subprocess.check_output(["python.exe", "play.py", match[0], match[1], match[2], "silent"]).decode("utf-8").strip())
+    if winner == 1:
+        results[match[0]] += 1
+        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+    elif winner == -1:
+        results[match[1]] += 1
+        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+    print(f'"{match[1]}" vs "{match[0]}"')
+    winner = int(subprocess.check_output(["python.exe", "play.py", match[1], match[0], match[2], "silent"]).decode("utf-8").strip())
+    if winner == 1:
+        results[match[1]] += 1
+        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
+    elif winner == -1:
+        results[match[0]] += 1
+        print(sorted(results.items(), key=lambda x:x[1], reverse=True))
