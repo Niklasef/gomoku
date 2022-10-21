@@ -19,7 +19,7 @@ openings = [
     "-10,8, -9,9, -10,7, -8,9, -10,6, -7,9, -5,9, -10,4, -4,9, -10,3, -3,9, -10,2, -10,0, -1,9, -10,-1, 0,9, -10,-2, 1,9, 3,9, -10,-4, 4,9, -10,-5, 5,9, -10,-6, -10,-8, 7,9, -8,7",
     "-5,9, -3,9, -1,7, 1,9, 3,9, -1,5"
 ]
-CPU_CORES = 12
+CPU_CORES = 10
 
 models = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
 opponents = [os.path.basename(f.path) for f in os.scandir("models") if f.is_dir()]
