@@ -82,8 +82,8 @@ if len(sys.argv) >= 2 and sys.argv[1] == "visualize":
 output_format = 'BIN'
 opening_moves = []
 openings = numpy.zeros(shape=(24, 20, 20))
-i = 0
 
+i = 0
 with open('openings_freestyle.txt') as f:
     for line in f:
         opening_ser = subprocess.check_output(["python.exe", "opening.py", line, "silent"]).decode("utf-8")
