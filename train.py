@@ -17,9 +17,9 @@ def load_data(file_index):
 model = keras.models.Sequential([
     keras.layers.Conv2D(filters=64, kernel_size=(11,11), strides=(1,1), activation='relu', padding="same", input_shape=(20,20,1)),
     keras.layers.Conv2D(filters=128, kernel_size=(7,7), strides=(1,1), activation='relu', padding="same"),
-    keras.layers.Conv2D(filters=128, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
-    keras.layers.Conv2D(filters=128, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-    keras.layers.Conv2D(filters=256, kernel_size=(2,2), strides=(1,1), activation='relu', padding="same"),    
+    keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.Conv2D(filters=128, kernel_size=(2,2), strides=(1,1), activation='relu', padding="same"),    
     keras.layers.Flatten(),
     keras.layers.Dense(1024, activation='relu'),
     keras.layers.Dense(1024, activation='relu'),
@@ -49,8 +49,8 @@ for file_index in range(file_index_count):
     #### Train Model ####
     history = model.fit(train_dataset, epochs=3, validation_data=val_dataset)
 
-label = subprocess.check_output(["git", "describe"]).decode("utf-8").strip()
+label = subprocess.check_output(["git", "log", "-1", "--pretty=%B"]).decode("utf-8").strip()
 print(label)
-model.save('models/' + label)
+# model.save('models/' + label)
 
 print('Done')
