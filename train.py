@@ -51,6 +51,6 @@ for file_index in range(file_index_count):
 
 label = subprocess.check_output(["git", "log", "-1", "--pretty=%B"]).decode("utf-8").strip()
 print(label)
-# model.save('models/' + label)
+model.save('models/' + label)
 
 print('Done')
