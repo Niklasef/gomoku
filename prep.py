@@ -117,7 +117,6 @@ for year in range(start_year, end_year+1):
                 current_player = 1
                 
                 #Iterate moves in game
-                j = 0
                 with open(in_directory + filename) as file_in:
                     next(file_in)#Skip initial meta line
                     lines = []
@@ -148,7 +147,6 @@ for year in range(start_year, end_year+1):
                                         found_opening = True
                                         break
                             board[row-1][col-1] = current_player
-                            j += 1
                             current_player *= -1
                             if visualize:
                                 os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
