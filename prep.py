@@ -95,7 +95,6 @@ print('opening_moves length = ' + str(len(opening_moves)))
 data = numpy.zeros(shape=(CHUNK_COUNT, 20, 20))
 labels = numpy.zeros(shape=(CHUNK_COUNT, 400))
 i = 0
-game_i = 0
 col = 0
 row = 0
 file_index = 0
@@ -103,7 +102,6 @@ for year in range(start_year, end_year+1):
     root_dir = 'data\gomocup' + str(year) + 'results'
     if dev_mode :
         root_dir += '_test'    
-    group = 1
     for rootdir, dirs, files in os.walk(root_dir):
         for dir in dirs:
             if not dir.startswith('Freestyle'):
@@ -151,6 +149,4 @@ for year in range(start_year, end_year+1):
                             if visualize:
                                 os.system("python print_board.py " + numpy.array2string(board.ravel().astype(int), max_line_width=10000, separator='_').replace(' ',''))
                     print("i = " + str(i))
-                game_i += 1
-            group = group +1
     save(data, file_index)
